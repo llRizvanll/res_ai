@@ -109,3 +109,23 @@ describe('Validators (server/core/validate)', async () => {
     throws400(() => v.timeOpt('7pm', 'Time'), /time like/);
   });
 });
+
+describe('Arabic translations (public/i18n/ar.json)', () => {
+  const file = new URL('../../public/i18n/ar.json', import.meta.url);
+  test('the file is valid JSON with Arabic text for every entry', async () => {
+    const { readFileSync } = await import('node:fs');
+    const ar: Record<string, string> = JSON.parse(readFileSync(file, 'utf8'));
+    assert.ok(Object.keys(ar).length > 500);
+    const empty = Object.entries(ar).filter(([, v]) => !v.trim()).map(([k]) => k);
+    assert.deepEqual(empty, []);
+  });
+  test('every {0}, {1}… in the English is kept in the Arabic, so no amount or name goes missing', async () => {
+    const { readFileSync } = await import('node:fs');
+    const ar: Record<string, string> = JSON.parse(readFileSync(file, 'utf8'));
+    const marks = (s: string) => [...new Set(s.match(/\{\d\}/g) || [])].sort().join('');
+    // Allowed: an English plural "s" filled in as {n}, which Arabic does not need
+    const PLURAL_ONLY = new Set(['over {0} day{1}']);
+    const lost = Object.entries(ar).filter(([en, a]) => marks(en) !== marks(a) && !PLURAL_ONLY.has(en)).map(([en]) => en);
+    assert.deepEqual(lost, []);
+  });
+});

@@ -1,0 +1,50 @@
+/* Landing page: "Why MyretailCare" illustrated cards (two wide + two narrow, alternating like a bento grid) */
+.why { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.why-card { position: relative; overflow: hidden; border-radius: 22px; border: 1px solid var(--line); min-height: 360px;
+  background: linear-gradient(160deg, var(--card), color-mix(in srgb, var(--brand) 5%, var(--card)));
+  display: grid; grid-template-rows: auto 1fr; transition: transform 0.25s, box-shadow 0.25s; }
+.why-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.why-card.wide { grid-column: span 2; grid-template-columns: 1fr 1.15fr; grid-template-rows: 1fr; align-items: center; }
+.why-copy { padding: 30px 30px 8px; position: relative; z-index: 1; }
+.why-card.wide .why-copy { padding: 30px; }
+.why-copy h3 { font-size: clamp(22px, 2.4vw, 30px); font-weight: 800; margin-bottom: 10px; }
+.why-copy p { margin: 0; color: var(--ink-2); font-size: 16px; max-width: 40ch; }
+.why-art { width: 100%; height: 100%; max-height: 300px; align-self: end; }
+
+/* Flat two-tone drawing; every colour follows the page theme */
+.a-blob { fill: color-mix(in srgb, var(--brand) 10%, var(--bg-alt)); }
+.a-blob-fill { fill: color-mix(in srgb, var(--brand) 16%, var(--card)); }
+.a-card { fill: var(--card); stroke: var(--ink); stroke-width: 2.5; stroke-linejoin: round; }
+.a-ink { fill: var(--ink); }
+.a-muted { fill: color-mix(in srgb, var(--ink) 22%, transparent); }
+.a-brand { fill: var(--brand); }
+.a-red { fill: #e03131; }
+.a-stroke, .a-brand-stroke, .a-red-stroke, .a-white-stroke { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.a-stroke { stroke: var(--ink); stroke-width: 3; }
+.a-brand-stroke { stroke: var(--brand); stroke-width: 4; }
+.a-red-stroke { stroke: #e03131; stroke-width: 4; }
+.a-white-stroke { stroke: #fff; stroke-width: 3; }
+.a-ring { fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 4 7; }
+.a-ring-fill { fill: none; stroke: var(--line); stroke-width: 3; }
+.a-red-ring { fill: none; stroke: #e03131; stroke-width: 16; stroke-dasharray: 36.1 36.1; }
+.a-coin { fill: #fff; font: 800 26px var(--font); }
+
+.a-float { animation: why-float 4.5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.a-receipt { animation: why-print 5s ease-in-out infinite; }
+@keyframes why-float { 50% { transform: translateY(-8px); } }
+@keyframes why-print { 0%, 15% { transform: translateY(-40px); opacity: 0; } 35%, 85% { transform: none; opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .a-float, .a-receipt { animation: none; }
+}
+
+@media (max-width: 960px) {
+  .why { grid-template-columns: 1fr 1fr; }
+  .why-card.wide { grid-column: span 2; }
+}
+@media (max-width: 640px) {
+  .why { grid-template-columns: 1fr; }
+  .why-card, .why-card.wide { grid-column: auto; grid-template-columns: 1fr; grid-template-rows: auto 1fr; min-height: 0; }
+  .why-card.wide .why-copy { padding: 26px 24px 4px; }
+  .why-copy { padding: 26px 24px 4px; }
+  .why-art { max-height: 230px; }
+}

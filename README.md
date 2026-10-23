@@ -28,6 +28,7 @@ kitchen tablet) just opens it in a browser. No payment gateway — payments are 
 | **Demo restaurant** | Admin → Demo restaurant opens a fully set-up sample restaurant in its own tab, any time, for reference or to try things. It never touches your data, isn't backed up, refreshes weekly and can be reset in one click — so your real restaurant can start fresh while the demo stays available. |
 | **Multiple restaurants** | Settings → Restaurants: add branches, each with its own staff logins, menu, tables, stock, customers, reports, activity log and backups. Staff pick their restaurant on the sign-in page. Removing a branch archives its folder (never deletes). |
 | **Activity log** | Every sign-in (incl. failed), KOT, discount, void, bill, settlement, cancellation, delete, stock change, staff/settings change, reset and backup — with who, when, amount and device. Per-account daily summary (sales, voids, discounts, cancels). CSV export. Survives backup restores. |
+| **English & Arabic** | Every screen in English or Arabic (right-to-left layout, Arabic dates), chosen per device from the user menu or the sign-in page · bills and KOTs print in the device's language · names, dishes and notes you type stay exactly as typed |
 | **Settings** | Restaurant profile, GSTIN/FSSAI, charges, invoice prefix/footer, loyalty rate, floor & table setup, one-click database backup |
 
 All screens sync live (Server-Sent Events): a KOT sent from a waiter's phone pops up on the kitchen screen instantly.
@@ -85,7 +86,7 @@ Change these passwords (Staff & Roles) before real use.
 
 ## Quality checks
 
-`npm test` runs 123 checks: unit tests on the bill maths and validators, end-to-end checks on a throwaway server (landing page, demo restaurant, sign-in and lock-out, every role's permissions, input validation, bill totals, split payments, stock, retry safety, restaurant isolation, backups, reset & restore, recurring expenses, P&L and forecasts) and architecture checks that keep the code layering intact and every file within its size budget. It never touches your real data.
+`npm test` runs 125 checks: unit tests on the bill maths and validators, end-to-end checks on a throwaway server (landing page, demo restaurant, sign-in and lock-out, every role's permissions, input validation, bill totals, split payments, stock, retry safety, restaurant isolation, backups, reset & restore, recurring expenses, P&L and forecasts), checks that the Arabic file keeps every amount placeholder, and architecture checks that keep the code layering intact and every file within its size budget. It never touches your real data.
 
 Other scripts:
 

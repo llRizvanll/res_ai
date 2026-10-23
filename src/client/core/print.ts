@@ -6,6 +6,10 @@ import { taxBreakup } from '../../shared/calc.js';
 import { isRtl, t } from './i18n.js';
 
 const n2 = (n: number) => Number(n || 0).toFixed(2);
+/** Text the restaurant typed (names, address, notes) keeps its own reading order inside an Arabic bill */
+const v = (x: string | null | undefined) => `<bdi>${esc(x || '')}</bdi>`;
+/** Codes and phone numbers stay on one line, left to right */
+const code = (x: string | null | undefined) => `<span class="num">${esc(x || '')}</span>`;
 
 const RECEIPT_CSS = `
   @page { size: 80mm auto; margin: 3mm; }
@@ -17,8 +21,11 @@ const RECEIPT_CSS = `
   table { width: 100%; border-collapse: collapse; } td, th { padding: 1px 0; vertical-align: top; } th { text-align: start; }
   /* Number columns: keep a gap so "1 | 260.00 | 260.00" never prints as "1260.00260.00" */
   td.r, th.r { padding-inline-start: 2.5mm; white-space: nowrap; }
-  [dir='rtl'] body { font-family: 'Courier New', 'Geeza Pro', 'Noto Naskh Arabic', Tahoma, monospace; }
-  .num { direction: ltr; unicode-bidi: isolate; }
+  /* The typewriter font has no Arabic letters, so Arabic bills use a plain Arabic-capable font */
+  [dir='rtl'] body { font-family: Tahoma, 'Geeza Pro', 'Noto Naskh Arabic', 'Segoe UI', sans-serif; }
+  .num { direction: ltr; unicode-bidi: isolate; white-space: nowrap; }
+  /* Amount columns read left to right (so −145.00 keeps its minus in front) and sit on the left in Arabic */
+  [dir='rtl'] table:not(.s) td.r { direction: ltr; text-align: left; }
   .big { font-size: 16px; } .kot td { font-size: 14px; padding: 3px 0; } .void { text-decoration: line-through; }
 `;
 
@@ -56,26 +63,26 @@ export function printInvoice(o: Order, s: Settings) {
     o.order_no,
     `<div class="c">
       ${s.logo ? `<img src="${esc(s.logo)}" alt="" style="max-height:52px;max-width:52mm;filter:grayscale(1);margin-bottom:4px">` : ''}
-      <h1>${esc(s.name)}</h1>
-      ${s.tagline ? `<div class="s">${esc(s.tagline)}</div>` : ''}
-      <div class="s">${esc(s.address)}</div>
-      ${s.phone ? `<div class="s">${t('Ph:')} <span class="num">${esc(s.phone)}</span></div>` : ''}
-      ${s.gstin ? `<div class="s">${t('GSTIN:')} ${esc(s.gstin)}</div>` : ''}
-      ${s.fssai ? `<div class="s">${t('FSSAI:')} ${esc(s.fssai)}</div>` : ''}
+      <h1>${v(s.name)}</h1>
+      ${s.tagline ? `<div class="s">${v(s.tagline)}</div>` : ''}
+      <div class="s">${v(s.address)}</div>
+      ${s.phone ? `<div class="s">${t('Ph:')} ${code(s.phone)}</div>` : ''}
+      ${s.gstin ? `<div class="s">${t('GSTIN:')} ${code(s.gstin)}</div>` : ''}
+      ${s.fssai ? `<div class="s">${t('FSSAI:')} ${code(s.fssai)}</div>` : ''}
     </div>
     <hr><div class="c b">${t(o.status === 'completed' ? 'TAX INVOICE' : 'BILL (UNPAID)')}</div><hr>
     <table class="s">
-      ${row(`${t('Bill:')} <b>${esc(o.order_no)}</b>`, esc(fmtDateTime(o.closed_at || o.created_at)))}
-      ${row(esc(t(label(ORDER_TYPE_LABELS, o.type))) + (o.table_name ? ` · ${t('Table')} <b>${esc(o.table_name)}</b>` : ''), o.guests ? t('Guests: {0}', o.guests) : '')}
-      ${o.customer_name ? row(`${t('Customer:')} ${esc(o.customer_name)}`, `<span class="num">${esc(o.customer_phone)}</span>`) : ''}
-      ${o.delivery_address ? `<tr><td colspan="2">${t('Deliver to:')} ${esc(o.delivery_address)}</td></tr>` : ''}
-      ${o.created_by_name ? row(`${t('Served by:')} ${esc(o.created_by_name)}`, '') : ''}
+      ${row(`${t('Bill:')} <b>${code(o.order_no)}</b>`, esc(fmtDateTime(o.closed_at || o.created_at)))}
+      ${row(esc(t(label(ORDER_TYPE_LABELS, o.type))) + (o.table_name ? ` · ${t('Table')} <b>${v(o.table_name)}</b>` : ''), o.guests ? t('Guests: {0}', o.guests) : '')}
+      ${o.customer_name ? row(`${t('Customer:')} ${v(o.customer_name)}`, code(o.customer_phone)) : ''}
+      ${o.delivery_address ? `<tr><td colspan="2">${t('Deliver to:')} ${v(o.delivery_address)}</td></tr>` : ''}
+      ${o.created_by_name ? row(`${t('Served by:')} ${v(o.created_by_name)}`, '') : ''}
     </table>
     <hr>
     <table>
       <tr><th>${t('Item')}</th><th class="r">${t('Qty')}</th><th class="r">${t('Rate')}</th><th class="r">${t('Amt')}</th></tr>
       ${[...lines.values()]
-        .map((l) => `<tr><td>${esc(l.name)}</td><td class="r">${l.qty}</td><td class="r">${n2(l.price)}</td><td class="r">${n2(l.price * l.qty)}</td></tr>`)
+        .map((l) => `<tr><td>${v(l.name)}</td><td class="r">${l.qty}</td><td class="r">${n2(l.price)}</td><td class="r">${n2(l.price * l.qty)}</td></tr>`)
         .join('')}
     </table>
     <hr>
@@ -91,26 +98,26 @@ export function printInvoice(o: Order, s: Settings) {
     <table>${row(`<span class="big b">${t('Grand Total')}</span>`, `<span class="big b">${esc(s.currency || '₹')}${n2(o.total)}</span>`)}</table>
     <hr>
     ${o.payments?.length ? `<div class="s">${t('Paid:')} ${o.payments.map((p) => `${esc(t(label(PAYMENT_MODE_LABELS, p.mode)))} ${n2(p.amount)}`).join(isRtl() ? '، ' : ', ')}</div><hr>` : ''}
-    <div class="c s">${esc(s.invoice_footer || t('Thank you!'))}</div>`,
+    <div class="c s">${s.invoice_footer ? v(s.invoice_footer) : t('Thank you!')}</div>`,
   );
 }
 
 export function printKot(k: Kot, s: Settings) {
   printHTML(
     `KOT ${k.kot_no}`,
-    `<div class="c"><div class="b">${esc(s.name)}</div><div class="big b">${t('KOT #{0}', k.kot_no)}</div></div><hr>
+    `<div class="c"><div class="b">${v(s.name)}</div><div class="big b">${t('KOT #{0}', k.kot_no)}</div></div><hr>
     <table class="s">
-      <tr><td>${esc(t(label(ORDER_TYPE_LABELS, k.type)))}${k.table_name ? ` · <b class="big">${esc(k.table_name)}</b>` : ''}</td><td class="r">${esc(fmtDateTime(k.created_at))}</td></tr>
-      <tr><td>${t('Order: {0}', esc(k.order_no))}</td><td class="r">${esc(k.created_by_name || '')}</td></tr>
+      <tr><td>${esc(t(label(ORDER_TYPE_LABELS, k.type)))}${k.table_name ? ` · <b class="big">${v(k.table_name)}</b>` : ''}</td><td class="r">${esc(fmtDateTime(k.created_at))}</td></tr>
+      <tr><td>${t('Order: {0}', code(k.order_no))}</td><td class="r">${v(k.created_by_name)}</td></tr>
     </table><hr>
     <table class="kot">
       ${k.items
         .map(
-          (i) => `<tr class="${i.cancelled ? 'void' : ''}"><td class="b" style="width:14mm">${i.qty} x</td>
-          <td><b>${esc(i.name)}</b>${i.variant ? ` (${esc(i.variant)})` : ''}${i.notes ? `<div class="s">» ${esc(i.notes)}</div>` : ''}</td></tr>`,
+          (i) => `<tr class="${i.cancelled ? 'void' : ''}"><td class="b" style="width:14mm"><span class="num">${i.qty} x</span></td>
+          <td><b>${v(i.name)}</b>${i.variant ? ` (${v(i.variant)})` : ''}${i.notes ? `<div class="s">${isRtl() ? '«' : '»'} ${v(i.notes)}</div>` : ''}</td></tr>`,
         )
         .join('')}
     </table>
-    ${k.order_notes ? `<hr><div class="s">${t('Note:')} ${esc(k.order_notes)}</div>` : ''}<hr>`,
+    ${k.order_notes ? `<hr><div class="s">${t('Note:')} ${v(k.order_notes)}</div>` : ''}<hr>`,
   );
 }

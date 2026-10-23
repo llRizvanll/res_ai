@@ -47,7 +47,8 @@ src/
 │  ├─ app.ts          entry: sign-in vs app, demo tabs, live updates
 │  ├─ config.ts       locale, quick-pick presets (notes, cancel/void reasons, discounts), kitchen/table alert
 │  │                  thresholds, refresh timings
-│  ├─ core/           no DOM components: api client, types, formatting, dates & periods, theme, CSV, printing
+│  ├─ core/           no DOM components: api client, types, formatting, dates & periods, theme, CSV, printing,
+│  │                  i18n (screen language: English / Arabic, right-to-left)
 │  ├─ ui/             the UI kit, by atomic design (pages import from ui/index.ts)
 │  │  ├─ atoms/         badge, status badge, veg dot, change (▲/▼) indicator
 │  │  ├─ molecules/     toast + guard, empty state, form field
@@ -65,6 +66,7 @@ src/
 public/css/          app.css is a manifest; rules live in base/ · components/ · layout/ · pages/ · responsive.css
 public/index.html    the product landing page, served at /  (styles, script, screenshots and translations in public/site/;
                      Arabic text lives in site/i18n/ar.js keyed by the English text — add a line there when you add English copy)
+public/i18n/ar.json  Arabic for the app, keyed by the English text (loaded only when Arabic is chosen)
 public/app/          the restaurant app's page, served at /app/ (sign-in, then every screen; old /#/… links redirect here)
 ```
 
@@ -101,6 +103,24 @@ limit, split it by responsibility (see how `orders/`, `admin/`, `finance/`, `set
 - **Activity-log rules** (`core/audit.ts` `onAudit`): declare per route what gets recorded.
 - **Settings tabs** (`client/views/settings/tab.ts`): add a module exporting a `SettingsTab` and list it in `index.ts`.
 - **Data-tab cards** (`client/features/data-safety/card.ts`): a card renders itself and declares its own button actions.
+
+## Languages (English / Arabic)
+
+Screens are written in English. `client/core/i18n.ts` picks the language per device (user menu or sign-in page) and,
+for Arabic, sets `dir="rtl"` and loads `public/i18n/ar.json`. It then swaps rendered text for its Arabic entry as screens
+draw — so views need no changes:
+
+- Entries are keyed by the English text exactly as shown. Numbers and amounts become `{0}`, `{1}`…
+  (`"KOT #{0} sent to kitchen"`), and fixed wording around a name works the same way (`"Edit {0}"`).
+- Text with no entry stays English. Anything the restaurant typed (dish, customer and staff names, notes) is never in the
+  file; mark a spot `data-no-i18n` if a name could collide with a UI word (staff names already are).
+- For text built in code (the printed bill and KOT), call `t('Grand Total')` / `t('Guests: {0}', n)`.
+- Layout follows the reading direction because CSS uses logical properties (`margin-inline-start`, `text-align: start`…);
+  the few explicit mirrors live in `public/css/base/rtl.css`. Use logical properties in new CSS.
+- **Adding a screen or message:** add its English → Arabic line to `ar.json`. A unit test checks the file is valid and that
+  every `{n}` is kept.
+
+The landing page has its own small dictionary, `public/site/i18n/ar.js`, used the same way.
 
 ## The demo restaurant
 
@@ -150,4 +170,4 @@ in `client/config.ts`; business benchmarks in `shared/benchmarks.ts`.
 ## Quality gates
 
 - `npm run typecheck`: strict TypeScript with no unused code, no implicit returns, no switch fall-through.
-- `npm test`: 123 checks — unit, end-to-end (incl. the demo restaurant and the landing page) and architecture (layers + size budgets).
+- `npm test`: 125 checks — unit, end-to-end (incl. the demo restaurant and the landing page) and architecture (layers + size budgets).

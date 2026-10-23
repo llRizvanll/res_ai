@@ -40,7 +40,7 @@ export function renderLayout(app: HTMLElement, ctx: AppCtx, onSignOut: () => voi
             <span class="clock" id="clock"></span>
             <div class="user-menu">
               <button class="user-chip" id="user-chip"><span class="avatar">${esc(user.name.charAt(0))}</span>
-                <span class="user-meta"><b>${esc(user.name)}</b><small>${ROLE_LABELS[user.role]}</small></span></button>
+                <span class="user-meta"><b data-no-i18n>${esc(user.name)}</b><small>${ROLE_LABELS[user.role]}</small></span></button>
               <div class="dropdown" id="user-dd" hidden>
                 <div class="dd-label">Appearance on this device</div>
                 <button data-mode="">Restaurant default</button>

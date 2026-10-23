@@ -39,7 +39,7 @@ async function load() {
   $('#u-table', root!).innerHTML = `<table class="table"><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Phone</th><th>Since</th><th>Status</th><th></th></tr></thead><tbody>
     ${users
       .map(
-        (u) => `<tr class="${u.active ? '' : 'muted'}"><td><b>${esc(u.name)}</b>${u.id === ctx.user.id ? ' <small>(you)</small>' : ''}</td><td>${esc(u.username)}</td>
+        (u) => `<tr class="${u.active ? '' : 'muted'}"><td><b data-no-i18n>${esc(u.name)}</b>${u.id === ctx.user.id ? ' <small>(you)</small>' : ''}</td><td>${esc(u.username)}</td>
         <td>${esc(roleLabel(u.role))}</td><td>${esc(u.phone || '—')}</td><td>${fmtDate(u.created_at)}</td>
         <td>${u.active ? badge('Active', 'ok') : badge('Disabled', 'danger')}</td>
         <td class="actions-cell"><button class="btn ghost sm" data-edit="${u.id}">Edit</button></td></tr>`,

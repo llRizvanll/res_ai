@@ -64,7 +64,7 @@
     const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
       acceptNode: (n) => {
         const el = n.parentElement;
-        if (!el || SKIP_TAGS.has(el.tagName) || el.closest('[dir="ltr"], [data-i18n-skip]') || !/[A-Za-z]/.test(n.nodeValue)) return NodeFilter.FILTER_REJECT;
+        if (!el || SKIP_TAGS.has(el.tagName) || el.closest('body [dir="ltr"], [data-i18n-skip]') || !/[A-Za-z]/.test(n.nodeValue)) return NodeFilter.FILTER_REJECT;
         return NodeFilter.FILTER_ACCEPT;
       },
     });
