@@ -12,6 +12,7 @@ let ctx: AppCtx;
 let list: Customer[] = [];
 let q = '';
 let timer = 0;
+const selected = new Set<number>();
 
 const FIELDS: Field[] = [
   { name: 'name', label: 'Name', required: true, half: true },
@@ -29,6 +30,7 @@ export async function render(el: HTMLElement, _p: Record<string, string>, c: App
       <div class="toolbar">
         <input type="search" id="c-q" placeholder="Search name, phone or email…" value="${esc(q)}">
         <span class="grow"></span>
+        <button class="btn danger" data-a="bulk-del" hidden></button>
         <button class="btn ghost" data-a="csv">⇩ Export</button>
         <button class="btn primary" data-a="add">+ Add customer</button>
       </div>
@@ -42,6 +44,20 @@ export async function render(el: HTMLElement, _p: Record<string, string>, c: App
     timer = window.setTimeout(load, 200);
   });
   root.addEventListener('click', onClick);
+  root.addEventListener('change', (e) => {
+    const t = e.target as HTMLInputElement;
+    if (t.dataset.sel) {
+      if (t.checked) selected.add(Number(t.dataset.sel));
+      else selected.delete(Number(t.dataset.sel));
+    } else if ('selAll' in t.dataset) {
+      root.querySelectorAll<HTMLInputElement>('[data-sel]').forEach((cb) => {
+        cb.checked = t.checked;
+        if (t.checked) selected.add(Number(cb.dataset.sel));
+        else selected.delete(Number(cb.dataset.sel));
+      });
+    } else return;
+    paintBulk();
+  });
   await load();
 }
 
@@ -56,21 +72,38 @@ async function load() {
     <div class="kpi"><small>Lifetime revenue</small><b>${money0(list.reduce((a, c) => a + c.total_spent, 0))}</b></div>
     <div class="kpi"><small>Birthdays this month</small><b>${bdays}</b></div>`;
   $('#c-table', root!).innerHTML = list.length
-    ? `<table class="table"><thead><tr><th>Name</th><th>Phone</th><th class="num">Visits</th><th class="num">Total spent</th><th class="num">Avg bill</th><th class="num">Points</th><th>Last visit</th><th>Birthday</th></tr></thead>
+    ? `<table class="table"><thead><tr>${canBulk() ? '<th class="sel"><input type="checkbox" data-sel-all aria-label="Select all"></th>' : ''}<th>Name</th><th>Phone</th><th class="num">Visits</th><th class="num">Total spent</th><th class="num">Avg bill</th><th class="num">Points</th><th>Last visit</th><th>Birthday</th></tr></thead>
       <tbody>${list
         .map(
-          (c) => `<tr class="click" data-id="${c.id}"><td><b>${esc(c.name)}</b>${c.email ? `<div class="muted small">${esc(c.email)}</div>` : ''}</td><td>${esc(c.phone)}</td>
+          (c) => `<tr class="click" data-id="${c.id}">${canBulk() ? `<td class="sel"><input type="checkbox" data-sel="${c.id}" ${selected.has(c.id) ? 'checked' : ''} aria-label="Select ${esc(c.name)}"></td>` : ''}<td><b>${esc(c.name)}</b>${c.email ? `<div class="muted small">${esc(c.email)}</div>` : ''}</td><td>${esc(c.phone)}</td>
           <td class="num">${c.visits}</td><td class="num">${money0(c.total_spent)}</td><td class="num">${c.visits ? money0(c.total_spent / c.visits) : '—'}</td>
           <td class="num">${Math.round(c.points)}</td><td>${fmtDate(c.last_visit)}</td><td>${c.birthday ? fmtDate(c.birthday) : '—'}</td></tr>`,
         )
         .join('')}</tbody></table>`
     : emptyState('No customers found', 'Customers are added from the POS or here');
+  paintBulk();
+}
+
+const canBulk = () => ctx.can(['admin', 'manager']);
+
+function paintBulk() {
+  const btn = $<HTMLButtonElement>('[data-a=bulk-del]', root);
+  btn.hidden = !selected.size;
+  btn.textContent = `Delete selected (${selected.size})`;
 }
 
 const onClick = guard(async (e: Event) => {
   const el = e.target as HTMLElement;
+  if (el.closest('td.sel, th.sel')) return;
   const a = el.closest<HTMLElement>('[data-a]')?.dataset.a;
   if (a === 'add') return edit();
+  if (a === 'bulk-del') {
+    if (!(await confirmDialog(`Delete ${selected.size} customer(s)? Their past orders stay but lose the customer link.`, { okLabel: 'Delete', danger: true }))) return;
+    await api.post('/customers/bulk-delete', { ids: [...selected] });
+    toast(`${selected.size} customers deleted`);
+    selected.clear();
+    return load();
+  }
   if (a === 'csv') {
     return downloadCSV('customers.csv', [
       ['Name', 'Phone', 'Email', 'Birthday', 'Visits', 'Total spent', 'Points', 'Last visit'],

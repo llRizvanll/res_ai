@@ -1,7 +1,7 @@
 import { api } from '../api.js';
 import { printInvoice } from '../print.js';
 import {
-  $, esc, money, fmtDateTime, today, label, ORDER_TYPES, PAY_MODES, statusBadge, modal, toast, guard, promptDialog, downloadCSV, emptyState, qtyFmt,
+  $, esc, money, fmtDateTime, today, label, ORDER_TYPES, PAY_MODES, statusBadge, modal, toast, guard, promptDialog, confirmDialog, downloadCSV, emptyState, qtyFmt,
 } from '../ui.js';
 import type { AppCtx, Order, OrderRow } from '../types.js';
 
@@ -110,6 +110,7 @@ async function openOrder(id: number) {
         <div class="grand"><span>Total</span><span>${money(o.total)}</span></div>
       </div>`,
     footer: `
+      ${ctx.can(['admin']) ? '<button class="btn ghost danger-text" data-a="delete">Delete permanently</button>' : ''}
       ${o.status === 'open' && canFront ? '<button class="btn ghost danger-text" data-a="cancel">Cancel order</button>' : ''}
       <span class="grow"></span>
       ${o.status !== 'cancelled' ? '<button class="btn" data-a="print">⎙ Print bill</button>' : ''}
@@ -117,6 +118,17 @@ async function openOrder(id: number) {
   });
   m.el.querySelector('[data-a=print]')?.addEventListener('click', () => printInvoice(o, ctx.settings));
   m.el.querySelector('a.btn')?.addEventListener('click', () => m.close());
+  m.el.querySelector('[data-a=delete]')?.addEventListener(
+    'click',
+    guard(async () => {
+      const msg = `Delete ${o.order_no} permanently? It disappears from all reports${o.status === 'completed' ? ', stock used by it is added back and the customer’s totals are reduced' : ''}. This cannot be undone.`;
+      if (!(await confirmDialog(msg, { okLabel: 'Delete order', danger: true }))) return;
+      await api.del('/orders/' + o.id);
+      toast('Order deleted');
+      m.close();
+      load();
+    }),
+  );
   m.el.querySelector('[data-a=cancel]')?.addEventListener(
     'click',
     guard(async () => {

@@ -18,10 +18,36 @@ export const DEFAULT_SETTINGS = {
   loyalty_rate: '1',
   kot_auto_print: '0',
   bill_auto_print: '0',
+  logo: '',
+  theme_color: '#e8590c',
+  theme_mode: 'light',
+  demo_data: '0',
+  setup_billing: '0',
+  closing_time: '23:30',
+};
+
+export const BRANDING_KEYS = ['name', 'tagline', 'logo', 'theme_color', 'theme_mode'];
+
+/** Values used when an owner "starts fresh": blank business details, sensible billing defaults */
+export const FRESH_SETTINGS: Record<string, string> = {
+  ...DEFAULT_SETTINGS,
+  name: 'My Restaurant',
+  tagline: '',
+  address: '',
+  phone: '',
+  email: '',
+  gstin: '',
+  fssai: '',
+  packaging_charge: '0',
+  invoice_footer: 'Thank you! Please visit again.',
 };
 
 // Adds any setting keys introduced by newer versions without touching existing values
 export function ensureSettings() {
+  // Databases created before the demo flag existed: detect the generated history
+  if (!get("SELECT 1 FROM settings WHERE key='demo_data'") && get("SELECT 1 FROM stock_moves WHERE note='Demo history' LIMIT 1")) {
+    run("INSERT INTO settings (key, value) VALUES ('demo_data', '1')");
+  }
   for (const [k, v] of Object.entries(DEFAULT_SETTINGS)) {
     run('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)', k, v);
   }
@@ -140,20 +166,35 @@ const fmt = (d: Date): string =>
   `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 const fmtDay = (d: Date): string => fmt(d).slice(0, 10);
 
-export function seed({ demo = true } = {}) {
-  tx(() => {
-    ensureSettings();
+export interface SeedOptions {
+  /** 'demo' = sample menu, tables, stock and 30 days of history; 'sample' = sample setup without history; 'empty' = nothing */
+  content?: 'demo' | 'sample' | 'empty';
+  /** Owner account to create; when omitted the five demo logins are created (first run only) */
+  admin?: { name: string; username: string; password: string };
+  name?: string;
+}
 
-    const users = [
-      ['Restaurant Owner', 'admin', 'admin123', 'admin'],
-      ['Floor Manager', 'manager', 'manager123', 'manager'],
-      ['Cashier Desk', 'cashier', 'cashier123', 'cashier'],
-      ['Ravi (Captain)', 'waiter', 'waiter123', 'waiter'],
-      ['Kitchen Display', 'kitchen', 'kitchen123', 'kitchen'],
-    ];
-    for (const [name, username, pw, role] of users) {
-      run('INSERT INTO users (name, username, password, role) VALUES (?,?,?,?)', name, username, hashPassword(pw), role);
+export function seed({ content = 'demo', admin, name }: SeedOptions = {}) {
+  tx(() => {
+    if (content === 'empty') {
+      for (const [k, v] of Object.entries(FRESH_SETTINGS)) run('INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)', k, v);
     }
+    ensureSettings();
+    if (name) run("UPDATE settings SET value=? WHERE key='name'", name);
+
+    const users = admin
+      ? [[admin.name, admin.username, admin.password, 'admin']]
+      : [
+          ['Restaurant Owner', 'admin', 'admin123', 'admin'],
+          ['Floor Manager', 'manager', 'manager123', 'manager'],
+          ['Cashier Desk', 'cashier', 'cashier123', 'cashier'],
+          ['Ravi (Captain)', 'waiter', 'waiter123', 'waiter'],
+          ['Kitchen Display', 'kitchen', 'kitchen123', 'kitchen'],
+        ];
+    for (const [uname, username, pw, role] of users) {
+      run('INSERT INTO users (name, username, password, role) VALUES (?,?,?,?)', uname, username!.toLowerCase(), hashPassword(pw!), role);
+    }
+    if (content === 'empty') return;
 
     const ground = run('INSERT INTO areas (name, sort) VALUES (?, ?)', 'Ground Floor', 1).id;
     const terrace = run('INSERT INTO areas (name, sort) VALUES (?, ?)', 'Terrace', 2).id;
@@ -183,11 +224,17 @@ export function seed({ demo = true } = {}) {
       }
     }
 
-    for (const [name, phone, birthday] of CUSTOMERS) {
-      run('INSERT INTO customers (name, phone, birthday) VALUES (?,?,?)', name, phone, birthday);
+    // Sample customers only make sense next to sample sales history
+    if (content === 'demo') {
+      for (const [cname, phone, birthday] of CUSTOMERS) {
+        run('INSERT INTO customers (name, phone, birthday) VALUES (?,?,?)', cname, phone, birthday);
+      }
     }
 
-    if (demo) seedDemoActivity();
+    if (content === 'demo') {
+      seedDemoActivity();
+      run("UPDATE settings SET value='1' WHERE key='demo_data'");
+    }
   });
 }
 
@@ -280,6 +327,23 @@ function seedDemoActivity() {
   expense(9, 'Marketing', 4000, 'Print shop', 'Menu leaflets');
   for (let b = 30; b >= 0; b -= 3) expense(b, 'Groceries & Vegetables', rand(2500, 6500), 'Local market', 'Fresh produce');
   expense(1, 'Utilities', 1199, 'Internet provider', 'Broadband');
+
+  // The monthly bills above repeat; templates continue them from next month without duplicating
+  const recurring = (back: number, category: string, amount: number, paid_to: string, note: string) => {
+    const d = new Date(now);
+    d.setDate(now.getDate() - back);
+    const start = fmtDay(d);
+    const next = new Date(d);
+    next.setMonth(d.getMonth() + 1);
+    run(
+      "INSERT INTO recurring_expenses (category, amount, paid_to, note, frequency, start_date, next_date) VALUES (?,?,?,?,'monthly',?,?)",
+      category, amount, paid_to, note, start, fmtDay(next),
+    );
+    run('UPDATE expenses SET recurring_id=last_insert_rowid() WHERE date=? AND category=? AND amount=?', start, category, amount);
+  };
+  recurring(28, 'Rent', 45000, 'Landlord', 'Monthly rent');
+  recurring(27, 'Salaries', 92000, 'Staff', 'Monthly payroll');
+  recurring(1, 'Utilities', 1199, 'Internet provider', 'Broadband');
 
   // Purchases this week
   const inv = all('SELECT * FROM inventory');

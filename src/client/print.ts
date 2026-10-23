@@ -48,6 +48,7 @@ export function printInvoice(o: Order, s: Settings) {
   printHTML(
     o.order_no,
     `<div class="c">
+      ${s.logo ? `<img src="${esc(s.logo)}" alt="" style="max-height:52px;max-width:52mm;filter:grayscale(1);margin-bottom:4px">` : ''}
       <h1>${esc(s.name)}</h1>
       ${s.tagline ? `<div class="s">${esc(s.tagline)}</div>` : ''}
       <div class="s">${esc(s.address)}</div>
@@ -83,8 +84,7 @@ export function printInvoice(o: Order, s: Settings) {
     <table>${row(`<span class="big b">Grand Total</span>`, `<span class="big b">${esc(s.currency || '₹')}${n2(o.total)}</span>`)}</table>
     <hr>
     ${o.payments?.length ? `<div class="s">Paid: ${o.payments.map((p) => `${esc(label(PAY_MODES, p.mode))} ${n2(p.amount)}`).join(', ')}</div><hr>` : ''}
-    <div class="c s">${esc(s.invoice_footer || 'Thank you!')}</div>
-    <div class="c s" style="margin-top:6px">Powered by DineFlow</div>`,
+    <div class="c s">${esc(s.invoice_footer || 'Thank you!')}</div>`,
   );
 }
 

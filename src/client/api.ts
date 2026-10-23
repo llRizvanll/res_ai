@@ -32,16 +32,55 @@ export const auth = {
   },
 };
 
+const RESTAURANT_KEY = 'restaurant';
+/** Which restaurant this device signs in to (only matters when there are several) */
+export const restaurant = {
+  get(): string {
+    try {
+      return localStorage.getItem(RESTAURANT_KEY) || 'main';
+    } catch {
+      return 'main';
+    }
+  },
+  set(slug: string) {
+    try {
+      localStorage.setItem(RESTAURANT_KEY, slug);
+    } catch {
+      /* ignore */
+    }
+  },
+};
+
+let online = true;
+/** Fires `net:down` / `net:up` on window when the server stops or starts answering */
+function setOnline(ok: boolean) {
+  if (ok === online) return;
+  online = ok;
+  window.dispatchEvent(new CustomEvent(ok ? 'net:up' : 'net:down'));
+}
+
+/** Unique id so a retried request (after a dropped connection) is recognised instead of duplicated */
+export function requestRef(): string {
+  return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12);
+}
+
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 async function request<T>(method: Method, path: string, body?: unknown): Promise<T> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) headers.Authorization = `Bearer ${token}`;
-  const res = await fetch('/api' + path, {
-    method,
-    headers,
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
+  let res: Response;
+  try {
+    res = await fetch('/api' + path, {
+      method,
+      headers,
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  } catch {
+    setOnline(false);
+    throw new Error("Can't reach the server. Check the Wi-Fi / server PC and try again — your unsent items are kept on this screen.");
+  }
+  setOnline(true);
   const data = await res.json().catch(() => ({}));
   if (res.status === 401 && path !== '/auth/login') {
     auth.clear();

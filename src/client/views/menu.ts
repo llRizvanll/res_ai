@@ -6,6 +6,7 @@ let root: HTMLElement = document.createElement('div'); // replaced on render; de
 let menu: Menu;
 let cat: number | 'all' = 'all';
 let q = '';
+const selected = new Set<number>();
 
 export async function render(el: HTMLElement, _p: Record<string, string>, _ctx: AppCtx) {
   el.innerHTML = `
@@ -18,6 +19,7 @@ export async function render(el: HTMLElement, _p: Record<string, string>, _ctx: 
         <div class="toolbar pad">
           <input type="search" id="m-q" placeholder="Search items or short codes…">
           <span class="grow"></span>
+          <button class="btn danger" data-a="bulk-del" hidden>Delete selected</button>
           <button class="btn primary" data-a="add-item">+ Add item</button>
         </div>
         <div id="item-table"></div>
@@ -39,6 +41,7 @@ export function onEvent(type: string) {
 
 async function load() {
   menu = await api.get<Menu>('/menu');
+  for (const id of [...selected]) if (!menu.items.some((i) => i.id === id)) selected.delete(id);
   paintCats();
   paintItems();
 }
@@ -61,10 +64,10 @@ function paintItems() {
   );
   const catName = (id: number | null) => menu.categories.find((c) => c.id === id)?.name || '—';
   $('#item-table', root!).innerHTML = items.length
-    ? `<table class="table"><thead><tr><th>Item</th><th>Code</th><th>Category</th><th class="num">Price</th><th class="num">GST</th><th>Variants</th><th>Available</th><th></th></tr></thead>
+    ? `<table class="table"><thead><tr><th class="sel"><input type="checkbox" data-sel-all aria-label="Select all" ${items.every((i) => selected.has(i.id)) ? 'checked' : ''}></th><th>Item</th><th>Code</th><th>Category</th><th class="num">Price</th><th class="num">GST</th><th>Variants</th><th>Available</th><th></th></tr></thead>
       <tbody>${items
         .map(
-          (i) => `<tr><td>${vegDot(i.veg)} <b>${esc(i.name)}</b>${i.description ? `<div class="muted small">${esc(i.description)}</div>` : ''}</td>
+          (i) => `<tr><td class="sel"><input type="checkbox" data-sel="${i.id}" ${selected.has(i.id) ? 'checked' : ''} aria-label="Select ${esc(i.name)}"></td><td>${vegDot(i.veg)} <b>${esc(i.name)}</b>${i.description ? `<div class="muted small">${esc(i.description)}</div>` : ''}</td>
           <td>${esc(i.code || '')}</td><td>${esc(catName(i.category_id))}</td><td class="num">${money(i.price)}</td><td class="num">${i.tax_rate}%</td>
           <td class="small">${i.variants.map((v) => `${esc(v.name)} ${money(v.price)}`).join('<br>') || '—'}</td>
           <td><input type="checkbox" class="switch" data-avail="${i.id}" ${i.available ? 'checked' : ''} aria-label="Available"></td>
@@ -72,14 +75,37 @@ function paintItems() {
         )
         .join('')}</tbody></table>`
     : emptyState('No items here yet', 'Add your first dish with “+ Add item”');
+  paintBulk();
 }
 
-const onChange = guard(async (e: Event) => {
+function paintBulk() {
+  const btn = $<HTMLButtonElement>('[data-a=bulk-del]', root);
+  btn.hidden = !selected.size;
+  btn.textContent = `Delete selected (${selected.size})`;
+}
+
+// Selection is synchronous; only the availability toggle talks to the server
+function onChange(e: Event) {
   const t = e.target as HTMLInputElement;
-  if (t.dataset.avail) {
-    await api.patch(`/items/${t.dataset.avail}/availability`, { available: t.checked });
-    toast(t.checked ? 'Item available' : 'Item marked out of stock');
+  if (t.dataset.sel) {
+    if (t.checked) selected.add(Number(t.dataset.sel));
+    else selected.delete(Number(t.dataset.sel));
+    return paintBulk();
   }
+  if ('selAll' in t.dataset) {
+    $$<HTMLInputElement>('[data-sel]', root).forEach((cb) => {
+      cb.checked = t.checked;
+      if (t.checked) selected.add(Number(cb.dataset.sel));
+      else selected.delete(Number(cb.dataset.sel));
+    });
+    return paintBulk();
+  }
+  if (t.dataset.avail) toggleAvailability(t);
+}
+
+const toggleAvailability = guard(async (t: HTMLInputElement) => {
+  await api.patch(`/items/${t.dataset.avail}/availability`, { available: t.checked });
+  toast(t.checked ? 'Item available' : 'Item marked out of stock');
 });
 
 const onClick = guard(async (e: Event) => {
@@ -93,6 +119,13 @@ const onClick = guard(async (e: Event) => {
   } else if (d.a === 'add-cat') editCategory();
   else if (d.editCat) editCategory(menu.categories.find((c) => c.id === Number(d.editCat)));
   else if (d.a === 'add-item') editItem();
+  else if (d.a === 'bulk-del') {
+    if (!(await confirmDialog(`Delete ${selected.size} menu item(s)? Past bills keep their copy of these items.`, { okLabel: 'Delete', danger: true }))) return;
+    await api.post('/items/bulk-delete', { ids: [...selected] });
+    toast(`${selected.size} items deleted`);
+    selected.clear();
+    await load();
+  }
   else if (d.edit) editItem(menu.items.find((i) => i.id === Number(d.edit)));
   else if (d.del) {
     const it = menu.items.find((i) => i.id === Number(d.del))!;

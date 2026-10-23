@@ -1,5 +1,7 @@
-import { api } from '../api.js';
-import { $, esc, money, money0, barChart, hbars, addDays, today, fmtTime, label, ORDER_TYPES, PAY_MODES, statusBadge, qtyFmt, emptyState } from '../ui.js';
+import { api, download } from '../api.js';
+import { $, esc, money, money0, barChart, hbars, addDays, today, fmtTime, label, ORDER_TYPES, PAY_MODES, statusBadge, qtyFmt, emptyState, toast } from '../ui.js';
+import { STEPS, type SetupStatus } from './setup.js';
+import type { Health } from './data-tools.js';
 import type { AppCtx, InventoryItem, Reservation } from '../types.js';
 
 interface Dash {
@@ -17,11 +19,28 @@ interface Dash {
   recent: { id: number; order_no: string; type: string; status: string; total: number; created_at: string; table_name: string | null }[];
 }
 
+let dashCtx: AppCtx | null = null;
+interface Reminder {
+  closing_time: string;
+  closing: { name: string; created: string } | null;
+  downloaded: { at: string; user_name: string } | null;
+}
 let root: HTMLElement = document.createElement('div'); // replaced on render; detached until then
 
 export async function render(el: HTMLElement, _p: Record<string, string>, ctx: AppCtx) {
   el.innerHTML = '<div class="page" id="dash"></div>';
   root = $('#dash', el);
+  root.addEventListener('click', async (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-dl-closing]');
+    if (!b) return;
+    try {
+      await download('/admin/backups/' + encodeURIComponent(b.dataset.dlClosing!), b.dataset.dlClosing!);
+      toast('Backup downloaded — keep it somewhere safe');
+      load();
+    } catch (err) {
+      toast((err as Error).message, 'error');
+    }
+  });
   await load(ctx);
 }
 
@@ -41,8 +60,37 @@ async function load(ctx?: AppCtx) {
   const avg = d.today.orders ? d.today.sales / d.today.orders : 0;
   const delta = d.yesterday.sales ? ((d.today.sales - d.yesterday.sales) / d.yesterday.sales) * 100 : 0;
   const isMgr = ctx ? ctx.can(['admin', 'manager']) : true;
+  if (ctx) dashCtx = ctx;
+  const isAdmin = !!dashCtx?.can(['admin']);
+  const [setup, health, reminder] = isAdmin
+    ? await Promise.all([
+        api.get<SetupStatus>('/admin/setup').catch(() => null),
+        api.get<Health>('/admin/health').catch(() => null),
+        api.get<Reminder>('/admin/backup-reminder').catch(() => null),
+      ])
+    : [null, null, null];
+  const closingBanner =
+    reminder?.closing && !reminder.downloaded
+      ? `<div class="card banner"><div><b>Today’s closing backup is ready</b><p class="muted">Saved at ${fmtTime(reminder.closing.created)}. Download it and keep it off this computer (phone, USB drive or email).</p></div>
+         <button class="btn primary" data-dl-closing="${esc(reminder.closing.name)}">⇩ Download today’s backup</button></div>`
+      : '';
+  const safety = health?.warnings.length
+    ? `<div class="card banner danger-banner"><div><b>Data safety needs attention</b>${health.warnings.map((w) => `<p class="muted">${esc(w)}</p>`).join('')}</div>
+       <a class="btn" href="#/settings?tab=data">Open Data safety</a></div>`
+    : '';
+  const required = STEPS.filter((x) => !x.optional);
+  const doneSteps = setup ? required.filter((x) => setup.steps[x.key]).length : required.length;
+  const banner = !setup
+    ? ''
+    : setup.demo
+      ? `<div class="card banner"><div><b>You're exploring demo data.</b><p class="muted">Try billing, tables, kitchen and reports freely. When you're ready, erase the demo and set up your own restaurant.</p></div>
+         <div class="actions"><a class="btn" href="#/setup">Setup guide</a><a class="btn primary" href="#/settings?tab=data">Start fresh</a></div></div>`
+      : doneSteps < required.length
+        ? `<div class="card banner"><div><b>Finish setting up your restaurant</b><p class="muted">${doneSteps} of ${required.length} steps done.</p><div class="progress"><div style="width:${(doneSteps / required.length) * 100}%"></div></div></div>
+           <a class="btn primary" href="#/setup">Continue setup →</a></div>`
+        : '';
 
-  root.innerHTML = `
+  root.innerHTML = `${safety}${closingBanner}${banner}
     <div class="kpis">
       <div class="kpi accent"><small>Today's sales</small><b>${money0(d.today.sales)}</b>
         <span class="${delta >= 0 ? 'up' : 'down'}">${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta).toFixed(0)}% vs yesterday (${money0(d.yesterday.sales)})</span></div>

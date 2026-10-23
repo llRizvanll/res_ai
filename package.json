@@ -1,7 +1,7 @@
 {
   "name": "dineflow-pos",
   "version": "1.0.0",
-  "description": "DineFlow — browser-based restaurant management software for small and medium restaurants (POS, tables, KDS, menu, inventory, CRM, reports).",
+  "description": "DineFlow \u2014 browser-based restaurant management software for small and medium restaurants (POS, tables, KDS, menu, inventory, CRM, reports).",
   "type": "module",
   "private": true,
   "engines": {
@@ -9,10 +9,12 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.server.json && tsc -p tsconfig.client.json",
-    "start": "npm run build && node --no-warnings dist/server/server.js",
+    "start": "npm run build && node --no-warnings dist/server/supervisor.js",
+    "start:once": "npm run build && node --no-warnings dist/server/server.js",
     "watch": "tsc -p tsconfig.client.json --watch --preserveWatchOutput",
     "typecheck": "tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.client.json --noEmit",
-    "reset": "rm -rf data && echo 'Data folder removed. Demo data will be recreated on next start.'"
+    "reset": "npm run build && node --no-warnings dist/server/reset-cli.js",
+    "test": "npm run build && node --test --test-reporter=spec 'dist/tests/*.test.js'"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

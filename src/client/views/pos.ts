@@ -1,4 +1,4 @@
-import { api } from '../api.js';
+import { api, requestRef } from '../api.js';
 import { computeTotals } from '../../shared/calc.js';
 import { printInvoice, printKot } from '../print.js';
 import {
@@ -36,6 +36,9 @@ interface PosState {
   cat: number | 'all';
   q: string;
   veg: 'all' | 'veg' | 'nonveg';
+  /** Retry-safe ids: kept while a send is unconfirmed, renewed when the cart changes */
+  kotRef: string | null;
+  orderRef: string | null;
 }
 
 const FRONT: Role[] = ['admin', 'manager', 'cashier'];
@@ -63,6 +66,7 @@ export async function render(el: HTMLElement, params: Record<string, string>, ct
     root, ctx, menu, floor, order: null, cart: [], type: (params.type as OrderType) || 'dine_in',
     table_id: params.table ? Number(params.table) : null, customer: null, guests: 2,
     discount_type: 'flat', discount_value: 0, notes: '', delivery_address: '', cat: 'all', q: '', veg: 'all',
+    kotRef: null, orderRef: null,
   };
 
   if (params.order) {
@@ -75,6 +79,7 @@ export async function render(el: HTMLElement, params: Record<string, string>, ct
   }
   if (!ctx.can(FRONT) && S.type !== 'dine_in' && !params.type) S.type = 'dine_in';
 
+  restoreDraft();
   renderCats();
   renderItems();
   renderCart();
@@ -159,6 +164,41 @@ function resetOrder(type: OrderType = S.type) {
 
 const canFront = () => S.ctx.can(FRONT);
 
+// ---------------------------------------------------------------- unsent-items drafts
+// Items not yet sent to the kitchen live only on this device, so they are saved locally
+// and survive a refresh, a closed tab, a crash or a dropped connection.
+const DRAFT_PREFIX = 'pos_draft:';
+const draftKey = () => DRAFT_PREFIX + (S.order ? `order:${S.order.id}` : `${S.type}:${S.table_id ?? ''}`);
+
+function saveDraft(key = draftKey()) {
+  try {
+    if (S.cart.length) localStorage.setItem(key, JSON.stringify({ cart: S.cart, at: Date.now() }));
+    else localStorage.removeItem(key);
+  } catch {
+    /* storage full or blocked — the cart still works in memory */
+  }
+}
+
+function restoreDraft() {
+  if (S.cart.length) return;
+  try {
+    const raw = localStorage.getItem(draftKey());
+    if (!raw) return;
+    const d = JSON.parse(raw) as { cart: CartLine[]; at: number };
+    if (Date.now() - d.at > 2 * 86400_000 || !d.cart?.length) return localStorage.removeItem(draftKey());
+    S.cart = d.cart;
+    toast(`Restored ${d.cart.length} unsent item(s) from before`, 'info');
+  } catch {
+    /* ignore a corrupt draft */
+  }
+}
+
+/** Call after every cart edit: renews the retry id and saves the draft */
+function cartChanged() {
+  S.kotRef = null;
+  saveDraft();
+}
+
 // ---------------------------------------------------------------- menu panel
 function renderCats() {
   const cats = S.menu.categories.filter((c) => c.active);
@@ -202,6 +242,7 @@ function addToCart(item: MenuItem, variant: string | null = null) {
   const line = S.cart.find((l) => l.key === key && !l.notes);
   if (line) line.qty += 1;
   else S.cart.push({ key, item_id: item.id, name: item.name, variant, price, qty: 1, tax_rate: item.tax_rate, notes: '', veg: item.veg });
+  cartChanged();
   renderCart();
   const box = S.root.querySelector('.cart-lines');
   if (box) box.scrollTop = box.scrollHeight;
@@ -376,20 +417,24 @@ function wire() {
       renderCart();
     } else if (d.inc) {
       S.cart[Number(d.inc)]!.qty += 1;
+      cartChanged();
       renderCart();
     } else if (d.dec) {
       const l = S.cart[Number(d.dec)]!;
       l.qty -= 1;
       if (l.qty <= 0) S.cart.splice(Number(d.dec), 1);
+      cartChanged();
       renderCart();
     } else if (d.remove) {
       S.cart.splice(Number(d.remove), 1);
+      cartChanged();
       renderCart();
     } else if (d.note) {
       const l = S.cart[Number(d.note)]!;
       promptDialog('Cooking instruction', `${l.name}`, { value: l.notes, required: false, chips: NOTE_CHIPS }).then((v) => {
         if (v === null) return;
         l.notes = v;
+        cartChanged();
         renderCart();
       });
     } else if (d.void) {
@@ -402,12 +447,19 @@ function wire() {
   root.addEventListener('change', async (e) => {
     const t = e.target as HTMLInputElement;
     if (t.id === 'pos-table') {
+      const oldKey = draftKey();
       S.table_id = t.value ? Number(t.value) : null;
+      try {
+        localStorage.removeItem(oldKey);
+      } catch {
+        /* ignore */
+      }
       const tb = S.floor.tables.find((x) => x.id === S.table_id);
       if (tb?.order_id) {
         await loadOrder(tb.order_id);
         toast(`Opened running order on ${tb.name}`, 'info');
       }
+      saveDraft();
       renderCart();
     } else if (t.id === 'pos-guests') {
       S.guests = Number(t.value) || 0;
@@ -423,24 +475,38 @@ function wire() {
 async function ensureOrder(): Promise<Order> {
   if (S.order) return S.order;
   if (S.type === 'dine_in' && !S.table_id) throw new Error('Please select a table first');
+  S.orderRef ??= requestRef();
   const body: Record<string, unknown> = {
     type: S.type, table_id: S.table_id, customer_id: S.customer?.id, guests: S.guests, notes: S.notes,
-    delivery_address: S.delivery_address,
+    delivery_address: S.delivery_address, client_ref: S.orderRef,
   };
   if (canFront()) Object.assign(body, { discount_type: S.discount_type, discount_value: S.discount_value });
+  const oldKey = draftKey();
   const o = await api.post<Order>('/orders', body);
+  S.orderRef = null;
   setOrder(o);
+  // The unsent items now belong to the created order
+  try {
+    localStorage.removeItem(oldKey);
+  } catch {
+    /* ignore */
+  }
+  saveDraft();
   return o;
 }
 
 async function sendKot(print: boolean): Promise<Order> {
   const o = await ensureOrder();
   if (!S.cart.length) return o;
+  S.kotRef ??= requestRef();
   const res = await api.post<{ order: Order; kot: Kot }>(`/orders/${o.id}/kot`, {
     items: S.cart.map((l) => ({ item_id: l.item_id, variant: l.variant, qty: l.qty, notes: l.notes })),
+    client_ref: S.kotRef,
   });
   S.cart = [];
+  S.kotRef = null;
   setOrder(res.order);
+  saveDraft();
   if (print || S.ctx.settings.kot_auto_print === '1') printKot(res.kot, S.ctx.settings);
   toast(`KOT #${res.kot.kot_no} sent to kitchen`);
   return res.order;
@@ -493,6 +559,7 @@ const ACTIONS: Record<string, () => void> = {
   }),
   clear: () => {
     S.cart = [];
+    cartChanged();
     renderCart();
   },
 };
@@ -508,9 +575,11 @@ const voidItem = guard(async (id: number) => {
 });
 
 function afterClose() {
+  // The order is settled or cancelled: drop its local draft
+  S.cart = [];
+  saveDraft();
   // Forget the closed order first so the live 'orders' event it triggers isn't mistaken for a remote change
   S.order = null;
-  S.cart = [];
   if (S.type === 'dine_in' && S.ctx.can(['admin', 'manager', 'cashier', 'waiter'])) location.hash = '#/tables';
   else resetOrder(S.type);
 }

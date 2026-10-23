@@ -1,5 +1,5 @@
 import { api } from '../api.js';
-import { $, esc, fmtDate, formModal, toast, guard, badge, type Field } from '../ui.js';
+import { $, esc, fmtDate, formModal, toast, guard, badge, confirmDialog, type Field } from '../ui.js';
 import type { AppCtx, Role, StaffUser } from '../types.js';
 
 const ROLES: [Role, string, string][] = [
@@ -63,7 +63,7 @@ function edit(u?: StaffUser) {
     { name: 'password', label: u ? 'New password (leave blank to keep)' : 'Password (min 6 chars)', type: 'password', required: !u, half: true },
     ...(u ? [{ name: 'active', label: 'Account active (can sign in)', type: 'checkbox', half: true } as Field] : []),
   ];
-  formModal({
+  const m = formModal({
     title: u ? `Edit ${u.name}` : 'Add staff member',
     values: u ? { ...u, active: !!u.active } : { role: 'waiter' },
     fields,
@@ -74,4 +74,21 @@ function edit(u?: StaffUser) {
       await load();
     },
   });
+  if (u && u.id !== ctx.user.id) {
+    const del = document.createElement('button');
+    del.className = 'btn ghost danger-text';
+    del.textContent = 'Delete account';
+    del.style.marginRight = 'auto';
+    m.$('.modal-foot').prepend(del);
+    del.addEventListener(
+      'click',
+      guard(async () => {
+        if (!(await confirmDialog(`Delete ${u.name}'s login permanently? Their past orders and bills are kept.`, { okLabel: 'Delete', danger: true }))) return;
+        await api.del('/users/' + u.id);
+        m.close();
+        toast('Account deleted');
+        await load();
+      }),
+    );
+  }
 }
