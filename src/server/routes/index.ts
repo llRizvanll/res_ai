@@ -1,0 +1,24 @@
+// Loading a route module registers its endpoints and activity-log rules.
+import './auth.js';
+import './settings.js';
+import './admin/overview.js';
+import './admin/reset.js';
+import './admin/backups.js';
+import './admin/health.js';
+import './admin/daily.js';
+import './floor.js';
+import './menu.js';
+import './orders/lifecycle.js';
+import './orders/items.js';
+import './orders/billing.js';
+import './kitchen.js';
+import './customers.js';
+import './inventory.js';
+import './reservations.js';
+import './expenses.js';
+import './finance.js';
+import './staff.js';
+import './reports.js';
+import './activity.js';
+import './restaurants.js';
+import './demo.js';

@@ -3,10 +3,10 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { config } from './config.js';
 
 const SERVER = path.join(import.meta.dirname, 'server.js');
-const DATA_DIR = process.env.DATA_DIR || path.join(import.meta.dirname, '..', '..', 'data');
-const LOG = path.join(DATA_DIR, 'logs', 'supervisor.log');
+const LOG = path.join(config.dataDir, 'logs', 'supervisor.log');
 
 let child: ChildProcess | null = null;
 let stopping = false;

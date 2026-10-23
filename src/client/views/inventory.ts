@@ -1,6 +1,11 @@
-import { api } from '../api.js';
-import { $, esc, money, money0, fmtDateTime, formModal, confirmDialog, toast, guard, qtyFmt, emptyState, badge, today, addDays } from '../ui.js';
-import type { AppCtx, InventoryItem, StockMove } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import type { InventoryItem, StockMove } from '../core/types/operations.js';
+import { $, esc } from '../core/dom.js';
+import { addDays, today } from '../core/dates.js';
+import { api } from '../core/api.js';
+import { fmtDateTime, money, money0, qtyFmt } from '../core/format.js';
+import { badge, confirmDialog, emptyState, formModal, guard, toast } from '../ui/index.js';
+import { STOCK_UNITS } from '../../shared/domain.js';
 
 let root: HTMLElement = document.createElement('div'); // replaced on render; detached until then
 let items: InventoryItem[] = [];
@@ -143,7 +148,7 @@ function edit(i?: InventoryItem) {
     values: i || { unit: 'kg', stock: 0, min_stock: 0, cost: 0 },
     fields: [
       { name: 'name', label: 'Name', required: true },
-      { name: 'unit', label: 'Unit', type: 'select', half: true, options: ['kg', 'g', 'ltr', 'ml', 'pcs', 'pack', 'dozen', 'box'].map((u) => [u, u]) },
+      { name: 'unit', label: 'Unit', type: 'select', half: true, options: STOCK_UNITS.map((u) => [u, u]) },
       { name: 'cost', label: 'Cost per unit', type: 'number', step: '0.01', min: 0, half: true },
       ...(i ? [] : [{ name: 'stock', label: 'Opening stock', type: 'number' as const, step: '0.001', min: 0, half: true }]),
       { name: 'min_stock', label: 'Reorder (minimum) level', type: 'number', step: '0.001', min: 0, half: true, hint: 'You get a low-stock alert at or below this level' },

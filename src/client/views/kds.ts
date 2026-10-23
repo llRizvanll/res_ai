@@ -1,7 +1,12 @@
-import { api } from '../api.js';
-import { printKot } from '../print.js';
-import { $, $$, esc, elapsed, minutesSince, label, ORDER_TYPES, modal, toast, guard, vegDot, fmtTime } from '../ui.js';
-import type { AppCtx, Kot, Menu } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import type { Kot } from '../core/types/orders.js';
+import type { Menu } from '../core/types/menu.js';
+import { $, $$, esc } from '../core/dom.js';
+import { api } from '../core/api.js';
+import { elapsed, fmtTime, label, minutesSince, ORDER_TYPE_LABELS } from '../core/format.js';
+import { printKot } from '../core/print.js';
+import { UI_CONFIG } from '../config.js';
+import { guard, modal, toast, vegDot } from '../ui/index.js';
 
 let root: HTMLElement = document.createElement('div'); // replaced on render; detached until then
 let ctx: AppCtx;
@@ -55,7 +60,7 @@ export async function render(el: HTMLElement, _p: Record<string, string>, c: App
   root.addEventListener('click', onClick);
   knownIds = new Set();
   await load(true);
-  const t = window.setInterval(() => load(), 20000);
+  const t = window.setInterval(() => load(), UI_CONFIG.timing.kitchenRefreshMs);
   return () => clearInterval(t);
 }
 
@@ -85,11 +90,12 @@ function paint() {
 
 function card(k: Kot, col: (typeof COLUMNS)[number]): string {
   const mins = minutesSince(k.created_at);
-  const urgency = mins >= 25 ? 'late' : mins >= 15 ? 'warn' : '';
+  const { warnAfterMin, lateAfterMin } = UI_CONFIG.kitchen;
+  const urgency = mins >= lateAfterMin ? 'late' : mins >= warnAfterMin ? 'warn' : '';
   return `<article class="kot-card ${urgency}">
-    <header><div><b class="kot-no">#${k.kot_no}</b> <span class="kot-where">${k.table_name ? esc(k.table_name) : esc(label(ORDER_TYPES, k.type))}</span></div>
+    <header><div><b class="kot-no">#${k.kot_no}</b> <span class="kot-where">${k.table_name ? esc(k.table_name) : esc(label(ORDER_TYPE_LABELS, k.type))}</span></div>
       <span class="kot-time" title="Received ${fmtTime(k.created_at)}">⏱ ${elapsed(k.created_at)}</span></header>
-    <div class="kot-sub">${esc(k.order_no)} · ${esc(label(ORDER_TYPES, k.type))}${k.created_by_name ? ` · ${esc(k.created_by_name)}` : ''}</div>
+    <div class="kot-sub">${esc(k.order_no)} · ${esc(label(ORDER_TYPE_LABELS, k.type))}${k.created_by_name ? ` · ${esc(k.created_by_name)}` : ''}</div>
     <ul>${k.items
       .map(
         (i) => `<li class="${i.cancelled ? 'void' : ''}"><b>${i.qty}×</b> <span>${esc(i.name)}${i.variant ? ` <small>(${esc(i.variant)})</small>` : ''}

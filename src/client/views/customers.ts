@@ -1,6 +1,12 @@
-import { api } from '../api.js';
-import { $, esc, money, money0, fmtDate, fmtDateTime, formModal, modal, confirmDialog, toast, guard, emptyState, statusBadge, label, ORDER_TYPES, downloadCSV, type Field } from '../ui.js';
-import type { AppCtx, Customer } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import type { Customer } from '../core/types/people.js';
+import { $, esc } from '../core/dom.js';
+import { api } from '../core/api.js';
+import { fmtDate, fmtDateTime, label, money, money0, ORDER_TYPE_LABELS } from '../core/format.js';
+import { downloadCSV } from '../core/csv.js';
+import { UI_CONFIG } from '../config.js';
+import { confirmDialog, emptyState, type Field, formModal, guard, modal, statusBadge, toast } from '../ui/index.js';
+import { ROLE_GROUPS } from '../../shared/domain.js';
 
 interface CustomerDetail extends Customer {
   orders: { id: number; order_no: string; type: string; total: number; status: string; created_at: string }[];
@@ -41,7 +47,7 @@ export async function render(el: HTMLElement, _p: Record<string, string>, c: App
   $('#c-q', root).addEventListener('input', (e) => {
     q = (e.target as HTMLInputElement).value.trim();
     clearTimeout(timer);
-    timer = window.setTimeout(load, 200);
+    timer = window.setTimeout(load, UI_CONFIG.timing.searchDebounceMs);
   });
   root.addEventListener('click', onClick);
   root.addEventListener('change', (e) => {
@@ -84,7 +90,7 @@ async function load() {
   paintBulk();
 }
 
-const canBulk = () => ctx.can(['admin', 'manager']);
+const canBulk = () => ctx.can(ROLE_GROUPS.MGR);
 
 function paintBulk() {
   const btn = $<HTMLButtonElement>('[data-a=bulk-del]', root);
@@ -148,10 +154,10 @@ async function detail(id: number) {
       <h4>Order history</h4>
       ${c.orders.length
         ? `<table class="table compact"><thead><tr><th>Order</th><th>Date</th><th>Type</th><th>Status</th><th class="num">Total</th></tr></thead><tbody>${c.orders
-            .map((o) => `<tr class="click" onclick="location.hash='#/orders?id=${o.id}'"><td>${esc(o.order_no)}</td><td>${fmtDateTime(o.created_at)}</td><td>${esc(label(ORDER_TYPES, o.type))}</td><td>${statusBadge(o.status)}</td><td class="num">${money(o.total)}</td></tr>`)
+            .map((o) => `<tr class="click" onclick="location.hash='#/orders?id=${o.id}'"><td>${esc(o.order_no)}</td><td>${fmtDateTime(o.created_at)}</td><td>${esc(label(ORDER_TYPE_LABELS, o.type))}</td><td>${statusBadge(o.status)}</td><td class="num">${money(o.total)}</td></tr>`)
             .join('')}</tbody></table>`
         : emptyState('No orders yet')}`,
-    footer: `${ctx.can(['admin', 'manager']) ? '<button class="btn ghost danger-text" data-a="del">Delete</button>' : ''}<span class="grow"></span><button class="btn" data-a="edit">Edit</button>`,
+    footer: `${ctx.can(ROLE_GROUPS.MGR) ? '<button class="btn ghost danger-text" data-a="del">Delete</button>' : ''}<span class="grow"></span><button class="btn" data-a="edit">Edit</button>`,
   });
   m.el.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('tr.click')) m.close();

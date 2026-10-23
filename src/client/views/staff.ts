@@ -1,14 +1,14 @@
-import { api } from '../api.js';
-import { $, esc, fmtDate, formModal, toast, guard, badge, confirmDialog, type Field } from '../ui.js';
-import type { AppCtx, Role, StaffUser } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import type { StaffUser } from '../core/types/people.js';
+import { $, esc } from '../core/dom.js';
+import { api } from '../core/api.js';
+import { fmtDate } from '../core/format.js';
+import { badge, confirmDialog, type Field, formModal, guard, toast } from '../ui/index.js';
+import type { Role } from '../../shared/domain.js';
+import { ROLE_DESCRIPTIONS, ROLE_LABELS, ROLES as ALL_ROLES } from '../../shared/domain.js';
 
-const ROLES: [Role, string, string][] = [
-  ['admin', 'Owner / Admin', 'Everything, including staff, settings and backups'],
-  ['manager', 'Manager', 'Billing, menu, inventory, expenses and reports'],
-  ['cashier', 'Cashier', 'Billing, settlements, discounts, customers, dashboard'],
-  ['waiter', 'Captain / Waiter', 'Take orders, send KOTs, print bills, reservations'],
-  ['kitchen', 'Kitchen', 'Kitchen display and dish availability only'],
-];
+/** [role, label, what they can do] for the form and the roles card */
+const ROLES: [Role, string, string][] = [...ALL_ROLES].map((r) => [r, ROLE_LABELS[r], ROLE_DESCRIPTIONS[r]]);
 
 let root: HTMLElement = document.createElement('div'); // replaced on render; detached until then
 let ctx: AppCtx;

@@ -1,0 +1,40 @@
+/* Getting started, reset centre, data safety, connection banner. */
+/* ---------------- setup & reset centre */
+.card.banner { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-left: 4px solid var(--brand); flex-wrap: wrap; }
+.card.banner p { margin: 4px 0 0; }
+.card.banner > div:first-child { flex: 1; min-width: 240px; }
+.progress { height: 8px; background: var(--hover); border-radius: 999px; overflow: hidden; margin: 8px 0 4px; }
+.progress div { height: 100%; background: var(--brand); border-radius: 999px; transition: width 0.3s; }
+.steps { list-style: none; padding: 0; margin: 12px 0 0; }
+.steps li { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.steps li:last-child { border-bottom: 0; }
+.steps li small { display: block; color: var(--muted); }
+.step-no { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; background: var(--hover); color: var(--ink-2); flex: none; }
+.steps li.done .step-no { background: var(--ok); color: #fff; }
+.steps li.done b { color: var(--ink-2); }
+.tips { padding-left: 18px; margin: 8px 0 0; line-height: 1.8; }
+.scope-list { display: flex; flex-direction: column; }
+.scope-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 4px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.scope-row:hover { background: var(--surface); }
+.scope-row input { margin-top: 3px; }
+.scope-row span { flex: 1; }
+.scope-row small { display: block; color: var(--muted); }
+.scope-row em { font-style: normal; color: var(--ink-2); font-size: 12.5px; white-space: nowrap; }
+.reset-list { margin: 6px 0 12px; padding-left: 20px; line-height: 1.8; }
+.settings .card.narrow + .card.narrow { margin-top: 16px; }
+.bulk-bar { display: flex; align-items: center; gap: 10px; }
+.table td.sel, .table th.sel { width: 36px; padding-right: 0; }
+.settings .card.banner { margin-bottom: 16px; }
+.net-banner { position: fixed; top: 0; left: 0; right: 0; z-index: 300; background: var(--danger); color: #fff; text-align: center; padding: 10px 16px; font-size: 14px; box-shadow: var(--shadow-lg); }
+.safety-list { list-style: none; padding: 0; margin: 0; }
+.safety-list li { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); align-items: flex-start; }
+.safety-list li:last-child { border-bottom: 0; }
+.safety-list .ic { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex: none; font-weight: 700; font-size: 13px; background: var(--ok-50); color: var(--ok); }
+.safety-list .ic.bad { background: var(--danger-50); color: var(--danger); }
+.safety-list .ic.info { background: var(--info-50); color: var(--info); }
+.safety-list small { display: block; color: var(--muted); }
+.mirror-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.mirror-row input { flex: 1; min-width: 220px; }
+.card.banner.danger-banner { border-left-color: var(--danger); }
+.card.banner.danger-banner p { margin: 4px 0 0; }
+.settings #s-body > .card + .card { margin-top: 16px; }

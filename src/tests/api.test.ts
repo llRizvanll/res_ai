@@ -369,7 +369,7 @@ describe('Expenses, P&L and growth projections', () => {
   };
 
   test('monthly dates clamp to the end of short months', async () => {
-    const { addMonths, nextOccurrence } = await import('../server/finance.js');
+    const { addMonths, nextOccurrence } = await import('../server/services/finance/index.js');
     assert.equal(addMonths('2026-01-31', 1), '2026-02-28');
     assert.equal(addMonths('2028-01-31', 1), '2028-02-29');
     assert.equal(nextOccurrence('monthly', '2026-02-28', 31), '2026-03-31', 'keeps the original day after a short month');
@@ -443,5 +443,45 @@ describe('Expenses, P&L and growth projections', () => {
     assert.ok(Number(d.month_end.projected_sales) >= Number(d.month_end.mtd_sales), 'projection never below what is already sold');
     assert.ok(Array.isArray(d.advice) && d.advice.length > 0);
     await rejects('GET', '/insights', undefined, cashier, 403);
+  });
+});
+
+describe('Demo restaurant (reference)', () => {
+  let demo = '';
+  test('an admin opens the demo and gets a demo-only session', async () => {
+    await rejects('POST', '/demo/open', {}, manager, 403);
+    const r = await ok('POST', '/demo/open', {}, admin);
+    demo = r.token;
+    assert.match(demo, /^demo\./);
+    const me = await ok('GET', '/auth/me', undefined, demo);
+    assert.equal(me.demo, true);
+    assert.equal(me.settings.name, 'Demo Restaurant');
+    assert.equal((await ok('GET', '/auth/me', undefined, admin)).demo, false, 'the real session is untouched');
+  });
+  test('the demo has full sample data and is separate from the real restaurant', async () => {
+    const orders = await ok('GET', '/orders?limit=5000', undefined, demo);
+    assert.ok(orders.length > 100, 'demo has 30 days of bills');
+    await ok('POST', '/customers', { name: 'Demo Only', phone: '9777700001' }, demo);
+    assert.equal((await ok('GET', '/customers?q=9777700001', undefined, admin)).length, 0, 'demo changes never reach the real restaurant');
+  });
+  test('the demo is not on the sign-in list and is never backed up', async () => {
+    const list = await ok('GET', '/restaurants');
+    assert.ok(!list.some((r: J) => r.slug === 'demo'));
+    const h = await ok('GET', '/admin/health', undefined, demo);
+    assert.deepEqual(h.warnings, [], 'no backup nagging inside the demo');
+  });
+  test('the demo cannot touch real restaurants, backups or the file system', async () => {
+    await rejects('POST', '/restaurants', { name: 'From Demo', admin_name: 'x', username: 'fromdemo', password: 'Good-pass-1' }, demo, 403, /demo/);
+    await rejects('PUT', '/settings', { backup_mirror_dir: '/tmp' }, demo, 403, /demo/);
+    await rejects('GET', '/backup', undefined, demo, 403, /demo/);
+    await rejects('POST', '/demo/open', {}, demo, 400, /already in the demo/);
+    await rejects('POST', '/restaurants', { name: 'Demo', slug: 'demo', admin_name: 'x', username: 'xyz', password: 'Good-pass-1' }, admin, 400, /code/);
+  });
+  test('reset gives fresh sample data and a new session', async () => {
+    await rejects('POST', '/demo/reset', {}, admin, 400, /Only the demo/);
+    const r = await ok('POST', '/demo/reset', {}, demo);
+    assert.match(r.token, /^demo\./);
+    await rejects('GET', '/orders', undefined, demo, 401);
+    assert.equal((await ok('GET', '/customers?q=9777700001', undefined, r.token)).length, 0, 'demo edits are gone after reset');
   });
 });

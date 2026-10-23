@@ -1,0 +1,7 @@
+/* Activity log and daily backups. */
+/* ---------------- activity & daily backups */
+.inline-date { width: auto; padding: 4px 8px; font-size: 13px; margin-left: 6px; }
+.scroll-y.tall { max-height: 640px; }
+.nowrap { white-space: nowrap; }
+.pad { padding: 12px 16px; }
+.activity .card-head h3 { display: flex; align-items: center; }

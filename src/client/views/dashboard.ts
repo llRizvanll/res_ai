@@ -1,8 +1,14 @@
-import { api, download } from '../api.js';
-import { $, esc, money, money0, barChart, hbars, addDays, today, fmtTime, label, ORDER_TYPES, PAY_MODES, statusBadge, qtyFmt, emptyState, toast } from '../ui.js';
-import { STEPS, type SetupStatus } from './setup.js';
-import type { Health } from './data-tools.js';
-import type { AppCtx, InventoryItem, Reservation } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import type { InventoryItem, Reservation } from '../core/types/operations.js';
+import { $, esc } from '../core/dom.js';
+import { addDays, today } from '../core/dates.js';
+import { api, download } from '../core/api.js';
+import { fmtTime, label, money, money0, ORDER_TYPE_LABELS, PAYMENT_MODE_LABELS, qtyFmt } from '../core/format.js';
+import type { Health } from '../features/data-safety/types.js';
+import { UI_CONFIG } from '../config.js';
+import { barChart, emptyState, hbars, statusBadge, toast } from '../ui/index.js';
+import { type SetupStatus, STEPS } from '../features/setup-steps.js';
+import { ROLE_GROUPS } from '../../shared/domain.js';
 
 interface Dash {
   today: { orders: number; sales: number; guests: number };
@@ -55,13 +61,14 @@ async function load(ctx?: AppCtx) {
   const series = days.map((day) => {
     const r = d.last7.find((x) => x.day === day);
     const dt = new Date(day + 'T00:00:00');
-    return { label: dt.toLocaleDateString('en-IN', { weekday: 'short' }), value: r?.sales || 0, tip: `${day}: ${money0(r?.sales || 0)} · ${r?.orders || 0} orders` };
+    return { label: dt.toLocaleDateString(UI_CONFIG.locale, { weekday: 'short' }), value: r?.sales || 0, tip: `${day}: ${money0(r?.sales || 0)} · ${r?.orders || 0} orders` };
   });
   const avg = d.today.orders ? d.today.sales / d.today.orders : 0;
   const delta = d.yesterday.sales ? ((d.today.sales - d.yesterday.sales) / d.yesterday.sales) * 100 : 0;
-  const isMgr = ctx ? ctx.can(['admin', 'manager']) : true;
+  const isMgr = ctx ? ctx.can(ROLE_GROUPS.MGR) : true;
   if (ctx) dashCtx = ctx;
-  const isAdmin = !!dashCtx?.can(['admin']);
+  // Set-up and backup prompts belong to the real restaurant, not the demo
+  const isAdmin = !!dashCtx?.can(ROLE_GROUPS.ADMIN) && !dashCtx?.demo;
   const [setup, health, reminder] = isAdmin
     ? await Promise.all([
         api.get<SetupStatus>('/admin/setup').catch(() => null),
@@ -103,9 +110,9 @@ async function load(ctx?: AppCtx) {
     <div class="grid-2">
       <div class="card"><div class="card-head"><h3>Sales — last 7 days</h3>${isMgr ? '<a href="#/reports" class="link">Full reports →</a>' : ''}</div>${barChart(series, { height: 220 })}</div>
       <div class="card"><div class="card-head"><h3>Today by payment mode</h3></div>
-        ${hbars(d.payments.map((p) => ({ label: label(PAY_MODES, p.mode), value: p.amount })))}
+        ${hbars(d.payments.map((p) => ({ label: label(PAYMENT_MODE_LABELS, p.mode), value: p.amount })))}
         <div class="card-head mt"><h3>Today by order type</h3></div>
-        ${hbars(d.byType.map((t) => ({ label: `${label(ORDER_TYPES, t.type)} (${t.orders})`, value: t.sales })))}
+        ${hbars(d.byType.map((t) => ({ label: `${label(ORDER_TYPE_LABELS, t.type)} (${t.orders})`, value: t.sales })))}
       </div>
     </div>
 
@@ -123,6 +130,6 @@ async function load(ctx?: AppCtx) {
 
     <div class="card"><div class="card-head"><h3>Recent orders</h3><a href="#/orders" class="link">All orders →</a></div>
       <table class="table"><thead><tr><th>Order</th><th>Type</th><th>Table</th><th>Time</th><th>Status</th><th class="num">Amount</th></tr></thead>
-      <tbody>${d.recent.map((o) => `<tr class="click" onclick="location.hash='#/orders?id=${o.id}'"><td><b>${esc(o.order_no)}</b></td><td>${esc(label(ORDER_TYPES, o.type))}</td><td>${esc(o.table_name || '—')}</td><td>${fmtTime(o.created_at)}</td><td>${statusBadge(o.status)}</td><td class="num">${money(o.total)}</td></tr>`).join('')}</tbody></table>
+      <tbody>${d.recent.map((o) => `<tr class="click" onclick="location.hash='#/orders?id=${o.id}'"><td><b>${esc(o.order_no)}</b></td><td>${esc(label(ORDER_TYPE_LABELS, o.type))}</td><td>${esc(o.table_name || '—')}</td><td>${fmtTime(o.created_at)}</td><td>${statusBadge(o.status)}</td><td class="num">${money(o.total)}</td></tr>`).join('')}</tbody></table>
     </div>`;
 }

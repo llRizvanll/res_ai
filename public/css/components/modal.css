@@ -1,0 +1,20 @@
+/* Dialogs and toasts. */
+/* modal */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(15, 20, 30, 0.45); display: flex; align-items: flex-start; justify-content: center; padding: 6vh 16px; z-index: 100; overflow-y: auto; animation: fade 0.12s; }
+@keyframes fade { from { opacity: 0; } }
+.modal { background: var(--card); border-radius: 14px; width: min(560px, 100%); box-shadow: var(--shadow-lg); display: flex; flex-direction: column; max-height: 88vh; animation: pop 0.15s; }
+@keyframes pop { from { transform: translateY(8px) scale(0.98); } }
+.modal.sm { width: min(420px, 100%); }
+.modal.lg { width: min(820px, 100%); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.modal-head h3 { font-size: 16px; }
+.modal-body { padding: 18px; overflow-y: auto; }
+.modal-body p:first-child { margin-top: 0; }
+.modal-foot { padding: 12px 18px; border-top: 1px solid var(--line); display: flex; justify-content: flex-end; gap: 8px; align-items: center; }
+
+#toasts { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 8px; z-index: 200; align-items: center; pointer-events: none; }
+.toast { background: #1d2433; color: #fff; padding: 10px 16px; border-radius: 10px; box-shadow: var(--shadow-lg); font-weight: 550; transition: opacity 0.4s, transform 0.4s; max-width: 90vw; }
+.toast.ok::before { content: '✓  '; color: #69db7c; }
+.toast.error { background: var(--danger); }
+.toast.info { background: var(--info); }
+.toast.hide { opacity: 0; transform: translateY(8px); }

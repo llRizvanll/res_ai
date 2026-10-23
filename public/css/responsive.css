@@ -1,0 +1,49 @@
+/* Tablet / phone layouts and printing. */
+/* ---------------- responsive */
+@media (max-width: 1200px) {
+  .pos { grid-template-columns: 150px 1fr 360px; }
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 960px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { position: fixed; inset: 0 auto 0 0; width: 250px; z-index: 60; transform: translateX(-100%); transition: transform 0.2s; }
+  .sidebar.open { transform: none; box-shadow: var(--shadow-lg); }
+  .menu-toggle { display: block; }
+  .clock, .user-meta { display: none; }
+  .grid-2, .grid-2.wide-left, .grid-3 { grid-template-columns: 1fr; }
+  .menu-page { grid-template-columns: 1fr; }
+  .cat-panel { position: static; }
+  .login { grid-template-columns: 1fr; }
+  .login-art { display: none; }
+  main.view-pos { overflow-y: auto; }
+  .pos { grid-template-columns: 1fr; height: auto; }
+  .pos-cats { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  .pos-cats button { white-space: nowrap; }
+  .item-grid { max-height: 52vh; }
+  .pos-cart { border-left: 0; border-top: 1px solid var(--line); }
+  .cart-lines { max-height: none; }
+  .kds-cols { grid-template-columns: 1fr; overflow-y: auto; }
+  main.view-kds { overflow-y: auto; }
+  .detail-grid { grid-template-columns: 1fr 1fr; }
+  .table { display: block; overflow-x: auto; white-space: nowrap; }
+}
+@media (max-width: 560px) {
+  .page { padding: 12px; }
+  .topbar { padding: 0 12px; }
+  .field.half, .field.third, .check.half { width: 100%; }
+  .pay-modes { grid-template-columns: repeat(3, 1fr); }
+  .item-grid { grid-template-columns: repeat(2, 1fr); }
+  .toolbar .legend { display: none; }
+}
+
+@media print {
+  .sidebar, .topbar, .no-print, .toolbar { display: none !important; }
+  .shell { display: block; height: auto; }
+  .main-wrap, main { height: auto; overflow: visible; }
+  .print-only { display: block; margin-bottom: 12px; }
+  .card, .kpi { box-shadow: none; break-inside: avoid; }
+  .kpi.accent { background: var(--card); color: var(--ink); border: 1px solid var(--line); }
+  .kpi.accent small, .kpi.accent span { color: var(--ink-2); }
+  .scroll-y { max-height: none; }
+  body { background: var(--card); }
+}

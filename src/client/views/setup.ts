@@ -1,32 +1,10 @@
-import { api } from '../api.js';
-import { $, esc, formModal, guard, toast } from '../ui.js';
-import { confirmReset, setDataCtx, type DataSummary } from './data-tools.js';
-import type { AppCtx } from '../types.js';
-
-export interface SetupStatus {
-  demo: boolean;
-  steps: Record<string, boolean>;
-}
-
-interface Step {
-  key: string;
-  title: string;
-  desc: string;
-  href?: string;
-  action?: 'password';
-  optional?: boolean;
-}
-
-export const STEPS: Step[] = [
-  { key: 'branding', title: 'Name, logo & colours', desc: 'Your restaurant name, logo and brand colour on every screen and bill.', href: '#/settings?tab=branding' },
-  { key: 'business', title: 'Business details', desc: 'Address, phone, GSTIN and FSSAI printed on bills.', href: '#/settings?tab=profile' },
-  { key: 'billing', title: 'Billing & tax', desc: 'Currency, service and packaging charges, invoice prefix, loyalty points.', href: '#/settings?tab=billing' },
-  { key: 'floor', title: 'Floor & tables', desc: 'Add dining areas (Ground floor, Terrace…) and their tables.', href: '#/settings?tab=floor' },
-  { key: 'menu', title: 'Menu', desc: 'Categories and dishes with prices, GST, veg / non-veg and portions.', href: '#/menu' },
-  { key: 'inventory', title: 'Inventory & recipes', desc: 'Raw materials and recipes so stock is deducted automatically.', href: '#/inventory', optional: true },
-  { key: 'staff', title: 'Staff logins', desc: 'Accounts for managers, cashiers, captains and the kitchen screen.', href: '#/staff' },
-  { key: 'password', title: 'Change the admin password', desc: 'The demo password “admin123” is still active on your account.', action: 'password' },
-];
+import type { AppCtx } from '../core/types/app.js';
+import { $, esc } from '../core/dom.js';
+import { api } from '../core/api.js';
+import type { DataSummary } from '../features/data-safety/types.js';
+import { confirmReset, setDataCtx } from '../features/data-safety/dialogs.js';
+import { formModal, guard, toast } from '../ui/index.js';
+import { type SetupStatus, STEPS } from '../features/setup-steps.js';
 
 export async function render(el: HTMLElement, _p: Record<string, string>, ctx: AppCtx) {
   setDataCtx(ctx);
@@ -55,6 +33,7 @@ export async function render(el: HTMLElement, _p: Record<string, string>, ctx: A
       <div class="card narrow">
         <h3>Tips</h3>
         <ul class="muted tips">
+          <li>Want to see how a fully set-up restaurant looks? <a class="link" href="#/demo">Open the demo restaurant</a> in its own tab any time — it never touches your data.</li>
           <li>Everything can be edited or deleted later — menu items, tables, staff, customers, expenses, even individual bills.</li>
           <li>Need a clean slate again? <a class="link" href="#/settings?tab=data">Settings → Data, reset &amp; backup</a> can clear any part of your data, and restores backups.</li>
           <li>Open the server's Wi-Fi address on a tablet for the Kitchen Display and on phones for captains.</li>

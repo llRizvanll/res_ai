@@ -1,6 +1,12 @@
-import { api } from '../api.js';
-import { $, esc, money, fmtTime, fmtDateTime, today, addDays, downloadCSV, emptyState, badge } from '../ui.js';
-import type { AppCtx, StaffUser } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import type { StaffUser } from '../core/types/people.js';
+import { $, esc } from '../core/dom.js';
+import { addDays, today } from '../core/dates.js';
+import { api } from '../core/api.js';
+import { fmtDateTime, fmtTime, money } from '../core/format.js';
+import { downloadCSV } from '../core/csv.js';
+import { UI_CONFIG } from '../config.js';
+import { badge, emptyState } from '../ui/index.js';
 
 interface Entry {
   id: number;
@@ -89,7 +95,7 @@ export async function render(el: HTMLElement, _p: Record<string, string>, _ctx: 
     if (t.dataset.f === 'q') {
       f.q = t.value.trim();
       clearTimeout(timer);
-      timer = window.setTimeout(loadList, 250);
+      timer = window.setTimeout(loadList, UI_CONFIG.timing.searchDebounceMs);
     }
   });
   root.addEventListener('click', (e) => {

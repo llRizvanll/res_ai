@@ -1,9 +1,14 @@
-import { api } from '../api.js';
-import { printInvoice } from '../print.js';
-import {
-  $, esc, money, fmtDateTime, today, label, ORDER_TYPES, PAY_MODES, statusBadge, modal, toast, guard, promptDialog, confirmDialog, downloadCSV, emptyState, qtyFmt,
-} from '../ui.js';
-import type { AppCtx, Order, OrderRow } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import type { Order, OrderRow } from '../core/types/orders.js';
+import { $, esc } from '../core/dom.js';
+import { api } from '../core/api.js';
+import { fmtDateTime, label, money, ORDER_TYPE_LABELS, PAYMENT_MODE_LABELS, qtyFmt } from '../core/format.js';
+import { downloadCSV } from '../core/csv.js';
+import { printInvoice } from '../core/print.js';
+import { today } from '../core/dates.js';
+import { UI_CONFIG } from '../config.js';
+import { confirmDialog, emptyState, guard, modal, promptDialog, statusBadge, toast } from '../ui/index.js';
+import { ROLE_GROUPS } from '../../shared/domain.js';
 
 let root: HTMLElement = document.createElement('div'); // replaced on render; detached until then
 let ctx: AppCtx;
@@ -18,7 +23,7 @@ export async function render(el: HTMLElement, params: Record<string, string>, c:
         <label>From <input type="date" id="o-from" value="${f.from}"></label>
         <label>To <input type="date" id="o-to" value="${f.to}"></label>
         <select id="o-status"><option value="">All statuses</option><option value="open">Running</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select>
-        <select id="o-type"><option value="">All types</option>${Object.entries(ORDER_TYPES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select>
+        <select id="o-type"><option value="">All types</option>${Object.entries(ORDER_TYPE_LABELS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select>
         <input type="search" id="o-q" placeholder="Order no, customer, phone, table…" value="${esc(f.q)}">
         <button class="btn ghost" id="o-csv">⇩ Export CSV</button>
       </div>
@@ -41,7 +46,7 @@ export async function render(el: HTMLElement, params: Record<string, string>, c:
   $('#o-csv', root).addEventListener('click', () =>
     downloadCSV(`orders-${f.from}-to-${f.to}.csv`, [
       ['Order', 'Date', 'Type', 'Table', 'Customer', 'Phone', 'Items', 'Subtotal', 'Discount', 'Tax', 'Total', 'Payment', 'Status', 'Staff'],
-      ...rows.map((o) => [o.order_no, o.created_at, label(ORDER_TYPES, o.type), o.table_name, o.customer_name, o.customer_phone, o.item_count, o.subtotal, o.discount, o.tax, o.total, o.payment_mode, o.status, o.created_by_name]),
+      ...rows.map((o) => [o.order_no, o.created_at, label(ORDER_TYPE_LABELS, o.type), o.table_name, o.customer_name, o.customer_phone, o.item_count, o.subtotal, o.discount, o.tax, o.total, o.payment_mode, o.status, o.created_by_name]),
     ]),
   );
   root.addEventListener('click', (e) => {
@@ -67,9 +72,9 @@ async function load() {
     ? `<table class="table"><thead><tr><th>Order</th><th>Date &amp; time</th><th>Type</th><th>Table</th><th>Customer</th><th class="num">Items</th><th>Payment</th><th>Status</th><th class="num">Total</th></tr></thead>
       <tbody>${rows
         .map(
-          (o) => `<tr class="click" data-id="${o.id}"><td><b>${esc(o.order_no)}</b></td><td>${fmtDateTime(o.created_at)}</td><td>${esc(label(ORDER_TYPES, o.type))}</td>
+          (o) => `<tr class="click" data-id="${o.id}"><td><b>${esc(o.order_no)}</b></td><td>${fmtDateTime(o.created_at)}</td><td>${esc(label(ORDER_TYPE_LABELS, o.type))}</td>
           <td>${esc(o.table_name || '—')}</td><td>${esc(o.customer_name || '—')}<div class="muted small">${esc(o.customer_phone || '')}</div></td>
-          <td class="num">${o.item_count}</td><td>${esc(label(PAY_MODES, o.payment_mode))}</td><td>${statusBadge(o.status)}</td><td class="num"><b>${money(o.total)}</b></td></tr>`,
+          <td class="num">${o.item_count}</td><td>${esc(label(PAYMENT_MODE_LABELS, o.payment_mode))}</td><td>${statusBadge(o.status)}</td><td class="num"><b>${money(o.total)}</b></td></tr>`,
         )
         .join('')}</tbody></table>`
     : emptyState('No orders match these filters');
@@ -77,18 +82,18 @@ async function load() {
 
 async function openOrder(id: number) {
   const o = await api.get<Order>('/orders/' + id);
-  const canFront = ctx.can(['admin', 'manager', 'cashier']);
+  const canFront = ctx.can(ROLE_GROUPS.FRONT);
   const m = modal({
     title: `Order ${o.order_no}`,
     size: 'lg',
     body: `
       <div class="detail-grid">
         <div><small>Status</small>${statusBadge(o.status)}</div>
-        <div><small>Type</small><b>${esc(label(ORDER_TYPES, o.type))}${o.table_name ? ` · ${esc(o.table_name)}` : ''}</b></div>
+        <div><small>Type</small><b>${esc(label(ORDER_TYPE_LABELS, o.type))}${o.table_name ? ` · ${esc(o.table_name)}` : ''}</b></div>
         <div><small>Created</small><b>${fmtDateTime(o.created_at)}</b><span class="muted small">${esc(o.created_by_name || '')}</span></div>
         <div><small>Closed</small><b>${fmtDateTime(o.closed_at)}</b><span class="muted small">${esc(o.settled_by_name || '')}</span></div>
         <div><small>Customer</small><b>${esc(o.customer_name || '—')}</b><span class="muted small">${esc(o.customer_phone || '')}</span></div>
-        <div><small>Payment</small><b>${o.payments.length ? o.payments.map((p) => `${esc(label(PAY_MODES, p.mode))} ${money(p.amount)}`).join(' + ') : '—'}</b></div>
+        <div><small>Payment</small><b>${o.payments.length ? o.payments.map((p) => `${esc(label(PAYMENT_MODE_LABELS, p.mode))} ${money(p.amount)}`).join(' + ') : '—'}</b></div>
       </div>
       ${o.cancel_reason ? `<div class="alert">Cancelled: ${esc(o.cancel_reason)}</div>` : ''}
       ${o.notes ? `<div class="order-note">Note: ${esc(o.notes)}</div>` : ''}
@@ -110,7 +115,7 @@ async function openOrder(id: number) {
         <div class="grand"><span>Total</span><span>${money(o.total)}</span></div>
       </div>`,
     footer: `
-      ${ctx.can(['admin']) ? '<button class="btn ghost danger-text" data-a="delete">Delete permanently</button>' : ''}
+      ${ctx.can(ROLE_GROUPS.ADMIN) ? '<button class="btn ghost danger-text" data-a="delete">Delete permanently</button>' : ''}
       ${o.status === 'open' && canFront ? '<button class="btn ghost danger-text" data-a="cancel">Cancel order</button>' : ''}
       <span class="grow"></span>
       ${o.status !== 'cancelled' ? '<button class="btn" data-a="print">⎙ Print bill</button>' : ''}
@@ -132,7 +137,7 @@ async function openOrder(id: number) {
   m.el.querySelector('[data-a=cancel]')?.addEventListener(
     'click',
     guard(async () => {
-      const reason = await promptDialog('Cancel order', 'Reason', { chips: ['Customer left', 'Wrong order', 'Duplicate order'] });
+      const reason = await promptDialog('Cancel order', 'Reason', { chips: UI_CONFIG.presets.cancelReasons });
       if (!reason) return;
       await api.post(`/orders/${o.id}/cancel`, { reason });
       toast('Order cancelled');

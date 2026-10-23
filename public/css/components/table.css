@@ -1,0 +1,18 @@
+/* Data tables. */
+/* tables */
+.table { width: 100%; border-collapse: collapse; }
+.table th { text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--muted); font-weight: 650; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--surface); white-space: nowrap; }
+.table td { padding: 10px 14px; border-bottom: 1px solid var(--hover); vertical-align: middle; }
+.table tr:last-child td { border-bottom: 0; }
+.table.compact td, .table.compact th { padding: 7px 10px; }
+.card:not(.flush) .table.compact td:first-child, .card:not(.flush) .table.compact th:first-child { padding-left: 0; }
+.card:not(.flush) .table.compact td:last-child { padding-right: 0; }
+.table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.table tr.click { cursor: pointer; }
+.table tr.click:hover td { background: var(--hover); }
+.table tr.void td { color: var(--muted); text-decoration: line-through; }
+.table tr.muted td { color: var(--muted); }
+.table .rank { color: var(--muted); width: 28px; }
+.table.pl tr.b td { font-weight: 700; border-top: 1px solid var(--line); }
+.table.pl tr.grand td { font-size: 16px; color: var(--brand); }
+.scroll-y { max-height: 520px; overflow-y: auto; }

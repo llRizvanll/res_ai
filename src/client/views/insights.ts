@@ -1,6 +1,10 @@
-import { api } from '../api.js';
-import { $, esc, money0, barChart, lineChart, deltaBadge, emptyState, label, ORDER_TYPES, fmtDate } from '../ui.js';
-import type { AppCtx } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import { $, esc } from '../core/dom.js';
+import { MONTH_NAMES } from '../core/dates.js';
+import { api } from '../core/api.js';
+import { fmtDate, label, money0, ORDER_TYPE_LABELS } from '../core/format.js';
+import { UI_CONFIG } from '../config.js';
+import { barChart, deltaBadge, emptyState, lineChart } from '../ui/index.js';
 
 interface Point {
   day: string;
@@ -25,9 +29,8 @@ interface Insights {
   advice: { tone: string; text: string }[];
 }
 
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const monthName = (ym: string) => `${MONTHS[Number(ym.slice(5)) - 1]} ${ym.slice(2, 4)}`;
-const shortDay = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString('en-IN', { day: '2-digit', month: 'short' });
+const monthName = (ym: string) => `${MONTH_NAMES[Number(ym.slice(5)) - 1]} ${ym.slice(2, 4)}`;
+const shortDay = (d: string) => new Date(d + 'T00:00:00').toLocaleDateString(UI_CONFIG.locale, { day: '2-digit', month: 'short' });
 let root: HTMLElement = document.createElement('div');
 
 export async function render(el: HTMLElement, _p: Record<string, string>, _ctx: AppCtx) {
@@ -137,7 +140,7 @@ export async function render(el: HTMLElement, _p: Record<string, string>, _ctx: 
       </div>
       <div class="card"><div class="card-head"><h3>Channels & customers</h3></div>
         <table class="table compact"><tbody>
-          ${d.channels.map((c) => `<tr><td>${esc(label(ORDER_TYPES, c.type))}</td><td class="num">${money0(c.now)}</td><td class="num">${deltaBadge(c.change)}</td></tr>`).join('')}
+          ${d.channels.map((c) => `<tr><td>${esc(label(ORDER_TYPE_LABELS, c.type))}</td><td class="num">${money0(c.now)}</td><td class="num">${deltaBadge(c.change)}</td></tr>`).join('')}
         </tbody></table>
         <div class="figs mt">
           <span>Bills with a customer attached</span><b>${k.tagged_share ?? '—'}%</b>

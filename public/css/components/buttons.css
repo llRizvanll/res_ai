@@ -1,0 +1,60 @@
+/* Buttons, segmented controls, chips, badges, switches, alerts, empty states. */
+/* ---------------- buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); background: var(--card);
+  padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.12s;
+}
+.btn:hover:not(:disabled) { border-color: var(--line-strong); background: var(--hover); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn.primary { background: var(--brand); border-color: var(--brand); color: var(--on-brand); }
+.btn.primary:hover:not(:disabled) { background: var(--brand-600); }
+.btn.ok { background: var(--ok); border-color: var(--ok); color: var(--on-brand); }
+.btn.info { background: var(--info-50); border-color: var(--info-line); color: var(--info); }
+.btn.danger { background: var(--danger); border-color: var(--danger); color: var(--on-brand); }
+.btn.ghost { background: transparent; border-color: transparent; }
+.btn.ghost:hover:not(:disabled) { background: var(--hover); }
+.btn.sm { padding: 5px 10px; font-size: 13px; }
+.btn.block { width: 100%; padding: 11px; }
+.icon-btn { border: 0; background: transparent; cursor: pointer; padding: 6px 8px; border-radius: 6px; color: var(--ink-2); }
+.icon-btn:hover { background: var(--hover); }
+.icon-btn.sm { padding: 3px 6px; font-size: 12px; }
+.link { background: none; border: 0; color: var(--brand); cursor: pointer; padding: 0; font-weight: 600; font-size: 13px; }
+.link.sm { font-size: 12px; font-weight: 500; }
+
+.seg { display: inline-flex; background: var(--hover); padding: 3px; border-radius: 9px; gap: 2px; flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 7px; cursor: pointer; font-weight: 600; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
+.seg button.on { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+.seg button:disabled { cursor: not-allowed; opacity: 0.55; }
+.seg.wide { display: flex; margin-bottom: 12px; }
+.seg.wide button { flex: 1; justify-content: center; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.chip { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 4px 11px; font-size: 13px; cursor: pointer; }
+.chip:hover { border-color: var(--brand); color: var(--brand); }
+.chip.lg { border-radius: 10px; padding: 10px 14px; display: inline-flex; flex-direction: column; align-items: flex-start; font-weight: 650; min-width: 90px; }
+.chip.lg small { font-weight: 400; color: var(--muted); }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 650; background: var(--hover); color: var(--ink-2); text-transform: capitalize; white-space: nowrap; }
+.badge.ok { background: var(--ok-50); color: var(--ok); }
+.badge.warn { background: var(--warn-50); color: var(--warn); }
+.badge.danger { background: var(--danger-50); color: var(--danger); }
+.badge.info { background: var(--info-50); color: var(--info); }
+
+.veg-dot { display: inline-block; width: 12px; height: 12px; border: 1.5px solid; border-radius: 2px; position: relative; flex: none; vertical-align: -1px; }
+.veg-dot::after { content: ''; position: absolute; inset: 2px; border-radius: 50%; }
+.veg-dot.veg { border-color: var(--veg); } .veg-dot.veg::after { background: var(--veg); }
+.veg-dot.nonveg { border-color: var(--nonveg); } .veg-dot.nonveg::after { background: var(--nonveg); }
+
+.switch { appearance: none; -webkit-appearance: none; width: 36px !important; height: 20px; border-radius: 999px; background: var(--line-strong); position: relative; cursor: pointer; transition: background 0.15s; padding: 0; border: 0; }
+.switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: transform 0.15s; box-shadow: var(--shadow); }
+.switch:checked { background: var(--ok); }
+.switch:checked::after { transform: translateX(16px); }
+
+.alert { background: var(--danger-50); color: var(--danger); border: 1px solid var(--danger-line); padding: 10px 12px; border-radius: 8px; margin: 10px 0; }
+.loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 60px; color: var(--muted); }
+.spinner { width: 18px; height: 18px; border: 2px solid var(--line); border-top-color: var(--brand); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty, .empty-state { color: var(--muted); text-align: center; padding: 28px 12px; }
+.empty-state b { display: block; color: var(--ink-2); }
+.empty-state p { margin: 4px 0 0; font-size: 13px; }
+.empty-icon { font-size: 26px; color: var(--line-strong); }

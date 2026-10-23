@@ -25,6 +25,7 @@ kitchen tablet) just opens it in a browser. No payment gateway — payments are 
 | **Getting started** | Demo banner + step-by-step setup checklist (branding, business details, billing, tables, menu, inventory, staff, admin password) with progress |
 | **Reset & delete** | **Start fresh** erases all demo data and keeps only your login · or clear just what you choose (orders, customers, reservations, expenses, stock log, stock levels, inventory, menu, tables, staff, settings, branding) · type RESET + password to confirm · bulk-delete menu items & customers · delete staff accounts and individual bills (stock & customer totals are reversed) |
 | **Backups** | Automatic backup before every reset/restore · save backups any time · restore, download or delete them from Settings |
+| **Demo restaurant** | Admin → Demo restaurant opens a fully set-up sample restaurant in its own tab, any time, for reference or to try things. It never touches your data, isn't backed up, refreshes weekly and can be reset in one click — so your real restaurant can start fresh while the demo stays available. |
 | **Multiple restaurants** | Settings → Restaurants: add branches, each with its own staff logins, menu, tables, stock, customers, reports, activity log and backups. Staff pick their restaurant on the sign-in page. Removing a branch archives its folder (never deletes). |
 | **Activity log** | Every sign-in (incl. failed), KOT, discount, void, bill, settlement, cancellation, delete, stock change, staff/settings change, reset and backup — with who, when, amount and device. Per-account daily summary (sales, voids, discounts, cancels). CSV export. Survives backup restores. |
 | **Settings** | Restaurant profile, GSTIN/FSSAI, charges, invoice prefix/footer, loyalty rate, floor & table setup, one-click database backup |
@@ -78,10 +79,7 @@ Change these passwords (Staff & Roles) before real use.
 
 ## Quality checks
 
-`npm test` boots a throwaway server on a temporary folder and runs 80 end-to-end checks: sign-in and lock-out after
-5 wrong passwords, every role's permissions, input validation (lengths, ranges, dates, duplicates, GSTIN/FSSAI,
-phone/email), bill totals vs. the shared calculator, split payments, stock deduction and restore, retry safety,
-restaurant isolation, closing backups, download tracking, reset & restore, recurring expenses, P&L arithmetic and forecast sanity. It never touches your real data.
+`npm test` runs 117 checks: 17 unit tests on the bill maths and validators, 85 end-to-end checks on a throwaway server (demo restaurant, sign-in and lock-out, every role's permissions, input validation, bill totals, split payments, stock, retry safety, restaurant isolation, backups, reset & restore, recurring expenses, P&L and forecasts) and 15 architecture checks that keep the code layering intact and every file within its size budget. It never touches your real data.
 
 Other scripts:
 
@@ -96,21 +94,12 @@ Other scripts:
 
 ## Project layout
 
+See **[ARCHITECTURE.md](ARCHITECTURE.md)** for the full picture: layers, dependency rules, request lifecycle, how to add a feature, and configuration.
+
 ```
-src/
-  shared/calc.ts      bill math (tax, discount, charges, round-off) used by both server and browser
-  server/db.ts        SQLite schema + helpers
-  server/seed.ts      sample restaurant & demo data
-  server/server.ts    HTTP server, REST API, role checks, live events
-  server/backup.ts    verified backups, schedule, rotation, off-site copy
-  server/supervisor.ts  auto-restart wrapper used by npm start
-  client/app.ts       login, layout, router, role-based navigation
-  client/ui.ts        DOM, dialogs, forms, charts, formatting helpers
-  client/print.ts     thermal bill & KOT printing
-  client/views/*.ts   one file per screen
-public/               index.html, css, compiled JS
-data/restaurant.db    your data
-data/backups/         automatic & manual backups (restorable in Settings)
-data/restaurants/<code>/  each extra restaurant's own database and backups
-data/logs/            server, supervisor and error logs
+src/shared/   domain vocabulary + bill maths (used by server and browser)
+src/server/   config · core (http, sessions, validation, audit) · db · services · routes (one per feature)
+src/client/   core · ui (atoms → molecules → organisms) · features · shell · views (pages)
+src/tests/    unit · end-to-end API · architecture rules
+data/         restaurant.db, backups/, logs/, restaurants/<code>/ (extra branches)
 ```

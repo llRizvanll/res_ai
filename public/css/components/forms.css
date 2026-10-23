@@ -1,0 +1,15 @@
+/* Form fields and layouts. */
+/* forms */
+.form-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+.field { display: flex; flex-direction: column; gap: 5px; width: 100%; }
+.field.half { width: calc(50% - 6px); }
+.field.third { width: calc(33.33% - 8px); }
+.field label { font-size: 12.5px; font-weight: 600; color: var(--ink-2); }
+.field small { color: var(--muted); font-size: 11.5px; }
+.field.inline { flex-direction: row; align-items: center; gap: 10px; margin-bottom: 8px; }
+.field.inline label { width: 60px; }
+.check { display: flex; align-items: center; gap: 8px; font-weight: 550; cursor: pointer; }
+.check.half { width: calc(50% - 6px); }
+.form-actions { margin-top: 16px; display: flex; justify-content: flex-end; }
+.rep-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.rep-row input[type='number'] { max-width: 150px; }

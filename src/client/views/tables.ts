@@ -1,6 +1,10 @@
-import { api } from '../api.js';
-import { $, esc, money, elapsed, minutesSince, label, ORDER_TYPES, emptyState } from '../ui.js';
-import type { AppCtx, FloorData } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import type { FloorData } from '../core/types/floor.js';
+import { $, esc } from '../core/dom.js';
+import { api } from '../core/api.js';
+import { elapsed, label, minutesSince, money, ORDER_TYPE_LABELS } from '../core/format.js';
+import { UI_CONFIG } from '../config.js';
+import { emptyState } from '../ui/index.js';
 
 let root: HTMLElement = document.createElement('div'); // replaced on render; detached until then
 let areaFilter: number | 'all' = 'all';
@@ -16,7 +20,7 @@ export async function render(el: HTMLElement, _params: Record<string, string>, c
     }
   });
   await load(ctx);
-  const t = window.setInterval(() => load(ctx), 30000);
+  const t = window.setInterval(() => load(ctx), UI_CONFIG.timing.tablesRefreshMs);
   return () => clearInterval(t);
 }
 
@@ -58,7 +62,7 @@ async function load(_ctx?: AppCtx) {
           <div class="table-grid">${
             tables
               .map((t) => {
-                const late = t.order_time && minutesSince(t.order_time) > 60;
+                const late = t.order_time && minutesSince(t.order_time) > UI_CONFIG.tableOverdueMin;
                 const cls = !t.order_id ? 'free' : t.bill_printed ? 'billed' : late ? 'busy late' : 'busy';
                 return `<a class="table-card ${cls}" href="#/pos?table=${t.id}">
                   <div class="tc-top"><b>${esc(t.name)}</b><small>${t.seats} seats</small></div>
@@ -78,7 +82,7 @@ async function load(_ctx?: AppCtx) {
         f.open
           .map(
             (o) => `<a class="table-card busy ${o.bill_printed ? 'billed' : ''}" href="#/pos?order=${o.id}">
-              <div class="tc-top"><b>${esc(label(ORDER_TYPES, o.type))}</b><small>${esc(o.order_no)}</small></div>
+              <div class="tc-top"><b>${esc(label(ORDER_TYPE_LABELS, o.type))}</b><small>${esc(o.order_no)}</small></div>
               <div class="tc-amt">${money(o.total)}</div>
               <div class="tc-meta"><span>⏱ ${elapsed(o.created_at)}</span><span>${o.item_count} items</span></div>
               ${o.customer_name ? `<div class="tc-flag">${esc(o.customer_name)}</div>` : ''}

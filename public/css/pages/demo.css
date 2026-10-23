@@ -1,0 +1,12 @@
+/* Demo restaurant ribbon and tour. */
+/* ---------------- demo restaurant */
+.demo-ribbon { position: sticky; top: 0; z-index: 250; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  padding: 8px 16px; background: repeating-linear-gradient(135deg, #7048e8, #7048e8 14px, #6741d9 14px, #6741d9 28px); color: #fff; font-size: 13.5px; }
+.demo-ribbon .btn { background: rgba(255,255,255,.15); border-color: rgba(255,255,255,.35); color: #fff; }
+.demo-ribbon .btn:hover:not(:disabled) { background: rgba(255,255,255,.28); }
+body:has(.demo-ribbon) .shell { height: calc(100vh - 44px); }
+body:has(.demo-ribbon) .main-wrap { height: calc(100vh - 44px); }
+.tour-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 10px; }
+.tour-card { text-align: left; border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 12px 14px; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+.tour-card:hover { border-color: var(--brand); background: var(--brand-50); }
+.tour-card small { color: var(--muted); }

@@ -1,6 +1,11 @@
-import { api } from '../api.js';
-import { $, esc, fmtDate, formModal, confirmDialog, toast, guard, emptyState, statusBadge, today, addDays } from '../ui.js';
-import type { AppCtx, FloorData, Reservation } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import type { FloorData } from '../core/types/floor.js';
+import type { Reservation } from '../core/types/operations.js';
+import { $, esc } from '../core/dom.js';
+import { addDays, today } from '../core/dates.js';
+import { api } from '../core/api.js';
+import { fmtDate } from '../core/format.js';
+import { confirmDialog, emptyState, formModal, guard, statusBadge, toast } from '../ui/index.js';
 
 let root: HTMLElement = document.createElement('div'); // replaced on render; detached until then
 let list: Reservation[] = [];

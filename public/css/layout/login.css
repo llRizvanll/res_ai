@@ -1,0 +1,12 @@
+/* Sign-in screen. */
+/* ---------------- login */
+.login { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 1fr; }
+.login-art { background: radial-gradient(circle at 20% 20%, var(--brand-300) 0, var(--brand) 40%, var(--brand-600) 100%); color: var(--on-brand); padding: 56px; display: flex; flex-direction: column; justify-content: center; gap: 22px; }
+.login-art h2 { font-size: 32px; max-width: 460px; font-weight: 750; }
+.login-art ul { padding-left: 18px; margin: 0; line-height: 2; opacity: 0.95; }
+.login-card { align-self: center; justify-self: center; width: min(380px, 90vw); background: var(--card); padding: 32px; border-radius: 16px; box-shadow: var(--shadow-lg); }
+.login-card h1 { font-size: 24px; }
+.login-card p { margin: 4px 0 18px; }
+.demo-logins { margin-top: 16px; font-size: 13px; color: var(--ink-2); }
+.demo-logins summary { cursor: pointer; }
+.demo-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }

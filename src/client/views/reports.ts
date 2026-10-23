@@ -1,6 +1,11 @@
-import { api } from '../api.js';
-import { $, esc, money, money0, barChart, hbars, today, addDays, label, ORDER_TYPES, PAY_MODES, qtyFmt, downloadCSV, fmtDate, emptyState } from '../ui.js';
-import type { AppCtx } from '../types.js';
+import type { AppCtx } from '../core/types/app.js';
+import { $, esc } from '../core/dom.js';
+import { addDays, today } from '../core/dates.js';
+import { api } from '../core/api.js';
+import { fmtDate, label, money, money0, ORDER_TYPE_LABELS, PAYMENT_MODE_LABELS, qtyFmt } from '../core/format.js';
+import { downloadCSV } from '../core/csv.js';
+import { UI_CONFIG } from '../config.js';
+import { barChart, emptyState, hbars } from '../ui/index.js';
 
 interface Report {
   from: string;
@@ -84,7 +89,7 @@ async function load() {
   for (let x = f.from; x <= f.to && days.length < 92; x = addDays(x, 1)) days.push(x);
   const daily = days.map((day) => {
     const r = d.daily.find((x) => x.day === day);
-    return { label: days.length > 10 ? day.slice(8) : new Date(day + 'T00:00:00').toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }), value: r?.sales || 0, tip: `${fmtDate(day)}: ${money0(r?.sales || 0)} · ${r?.orders || 0} orders` };
+    return { label: days.length > 10 ? day.slice(8) : new Date(day + 'T00:00:00').toLocaleDateString(UI_CONFIG.locale, { day: '2-digit', month: 'short' }), value: r?.sales || 0, tip: `${fmtDate(day)}: ${money0(r?.sales || 0)} · ${r?.orders || 0} orders` };
   });
   const hours = Array.from({ length: 24 }, (_, h) => h).filter((h) => h >= 8 || d.hourly.some((x) => x.hour === h));
   const hourly = hours.map((h) => {
@@ -122,8 +127,8 @@ async function load() {
     </div>
 
     <div class="grid-3">
-      <div class="card"><div class="card-head"><h3>Payment modes</h3></div>${hbars(d.payments.map((p) => ({ label: label(PAY_MODES, p.mode), value: p.amount })))}</div>
-      <div class="card"><div class="card-head"><h3>Order types</h3></div>${hbars(d.byType.map((t) => ({ label: `${label(ORDER_TYPES, t.type)} (${t.orders})`, value: t.sales })))}</div>
+      <div class="card"><div class="card-head"><h3>Payment modes</h3></div>${hbars(d.payments.map((p) => ({ label: label(PAYMENT_MODE_LABELS, p.mode), value: p.amount })))}</div>
+      <div class="card"><div class="card-head"><h3>Order types</h3></div>${hbars(d.byType.map((t) => ({ label: `${label(ORDER_TYPE_LABELS, t.type)} (${t.orders})`, value: t.sales })))}</div>
       <div class="card"><div class="card-head"><h3>Leakage watch</h3></div>
         <table class="table compact">
           <tr><td>Cancelled orders</td><td class="num">${d.cancelled.n}</td><td class="num">${money0(d.cancelled.value)}</td></tr>
