@@ -1,0 +1,7 @@
+# Caddy gives free, automatic HTTPS for a cloud server. Point your domain's DNS (A record) at the server first.
+# Install Caddy, put this in /etc/caddy/Caddyfile, replace the domain, then: sudo systemctl reload caddy
+# Also set TRUST_PROXY=1 in the app's .env so real visitor IPs are recorded.
+pos.example.com {
+	encode gzip
+	reverse_proxy 127.0.0.1:3000
+}

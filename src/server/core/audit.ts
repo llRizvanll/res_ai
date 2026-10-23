@@ -4,7 +4,7 @@ import { get, getSettings, run, type Row } from '../db/index.js';
 import { r2 } from '../../shared/calc.js';
 import { log } from './log.js';
 import { config } from '../config.js';
-import type { Ctx, User } from './http.js';
+import { clientIp, type Ctx, type User } from './http.js';
 
 export interface AuditOpts {
   as?: User | null; // when there is no signed-in user yet (sign-in attempts)
@@ -21,7 +21,7 @@ export function audit(c: Pick<Ctx, 'req'> & { user?: User | null }, action: stri
       'INSERT INTO activity_log (user_id, user_name, role, action, entity, entity_id, summary, amount, details, ip) VALUES (?,?,?,?,?,?,?,?,?,?)',
       u?.id ?? null, u?.name ?? null, u?.role ?? null, action, o.entity ?? action.split('.')[0], o.id == null ? null : String(o.id),
       summary.slice(0, 300), o.amount ?? null, o.details === undefined ? null : JSON.stringify(o.details).slice(0, 4000),
-      String(c.req.socket.remoteAddress || '').replace('::ffff:', ''),
+      clientIp(c.req),
     );
   } catch (e) {
     log.error('Could not write activity log', e); // never block the actual work

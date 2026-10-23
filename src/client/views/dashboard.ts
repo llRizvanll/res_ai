@@ -130,6 +130,6 @@ async function load(ctx?: AppCtx) {
 
     <div class="card"><div class="card-head"><h3>Recent orders</h3><a href="#/orders" class="link">All orders →</a></div>
       <table class="table"><thead><tr><th>Order</th><th>Type</th><th>Table</th><th>Time</th><th>Status</th><th class="num">Amount</th></tr></thead>
-      <tbody>${d.recent.map((o) => `<tr class="click" onclick="location.hash='#/orders?id=${o.id}'"><td><b>${esc(o.order_no)}</b></td><td>${esc(label(ORDER_TYPE_LABELS, o.type))}</td><td>${esc(o.table_name || '—')}</td><td>${fmtTime(o.created_at)}</td><td>${statusBadge(o.status)}</td><td class="num">${money(o.total)}</td></tr>`).join('')}</tbody></table>
+      <tbody>${d.recent.map((o) => `<tr class="click" data-href="#/orders?id=${o.id}"><td><b>${esc(o.order_no)}</b></td><td>${esc(label(ORDER_TYPE_LABELS, o.type))}</td><td>${esc(o.table_name || '—')}</td><td>${fmtTime(o.created_at)}</td><td>${statusBadge(o.status)}</td><td class="num">${money(o.total)}</td></tr>`).join('')}</tbody></table>
     </div>`;
 }

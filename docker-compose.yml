@@ -1,0 +1,28 @@
+# Restaurant POS with Docker.
+#   docker compose up -d                      → app on http://<server>:3000
+#   docker compose --profile tunnel up -d     → also starts a Cloudflare Tunnel (set CLOUDFLARE_TUNNEL_TOKEN in .env)
+services:
+  pos:
+    build: .
+    image: restaurant-pos
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      TZ: ${TZ:-Asia/Kolkata}
+    volumes:
+      - ./data:/data                          # databases, backups, logs — back this folder up
+      # - /mnt/backup-drive/pos:/backup-mirror # optional second backup place (then set it in Settings → Data)
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    profiles: ["tunnel"]
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      - pos

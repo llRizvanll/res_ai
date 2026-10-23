@@ -1,7 +1,7 @@
 // Seeding a restaurant database: demo, sample or empty content, with the owner's account.
 import { get, run, tx } from '../query.js';
 import { hashPassword } from '../../core/passwords.js';
-import { MENU, INVENTORY, RECIPES, CUSTOMERS } from './catalog.js';
+import { MENU, INVENTORY, RECIPES, CUSTOMERS, DEMO_ACCOUNTS } from './catalog.js';
 import { seedDemoActivity } from './history.js';
 import { ensureSettings, FRESH_SETTINGS } from './settings.js';
 
@@ -23,13 +23,7 @@ export function seed({ content = 'demo', admin, name }: SeedOptions = {}) {
 
     const users = admin
       ? [[admin.name, admin.username, admin.password, 'admin']]
-      : [
-          ['Restaurant Owner', 'admin', 'admin123', 'admin'],
-          ['Floor Manager', 'manager', 'manager123', 'manager'],
-          ['Cashier Desk', 'cashier', 'cashier123', 'cashier'],
-          ['Ravi (Captain)', 'waiter', 'waiter123', 'waiter'],
-          ['Kitchen Display', 'kitchen', 'kitchen123', 'kitchen'],
-        ];
+      : DEMO_ACCOUNTS;
     for (const [uname, username, pw, role] of users) {
       run('INSERT INTO users (name, username, password, role) VALUES (?,?,?,?)', uname, username!.toLowerCase(), hashPassword(pw!), role);
     }
@@ -78,3 +72,4 @@ export function seed({ content = 'demo', admin, name }: SeedOptions = {}) {
 }
 
 export { DEFAULT_SETTINGS, FRESH_SETTINGS, BRANDING_KEYS, ensureSettings } from './settings.js';
+export { DEMO_ACCOUNTS } from './catalog.js';

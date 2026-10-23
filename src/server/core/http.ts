@@ -91,9 +91,32 @@ export function readBody(req: IncomingMessage): Promise<Body> {
   });
 }
 
+/**
+ * Browser hardening sent with every response. Scripts may only come from this server (no inline scripts);
+ * inline styles and data: images (logos) are allowed because the UI uses them.
+ */
+export const SECURITY_HEADERS: Record<string, string> = {
+  'Content-Security-Policy':
+    "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self'; " +
+    "font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'same-origin',
+  'X-Frame-Options': 'DENY',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
+
+/** The visitor's IP; behind a trusted proxy/tunnel use the address it forwards */
+export function clientIp(req: IncomingMessage): string {
+  if (config.trustProxy) {
+    const h = req.headers['cf-connecting-ip'] || req.headers['x-real-ip'] || String(req.headers['x-forwarded-for'] || '').split(',')[0];
+    if (h && String(h).trim()) return String(h).trim();
+  }
+  return String(req.socket.remoteAddress || '').replace('::ffff:', '');
+}
+
 export function send(res: ServerResponse, status: number, data: unknown) {
   if (res.headersSent) return;
-  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+  res.writeHead(status, { ...SECURITY_HEADERS, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
   res.end(JSON.stringify(data));
 }
 
@@ -117,6 +140,6 @@ export function serveStatic(res: ServerResponse, pathname: string) {
     }
     file = path.join(PUBLIC, 'index.html');
   }
-  res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
+  res.writeHead(200, { ...SECURITY_HEADERS, 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
   fs.createReadStream(file).pipe(res);
 }

@@ -137,6 +137,8 @@ All tunables live in `src/server/config.ts`. Set these as environment variables:
 | `LOGIN_LOCK_AFTER` / `LOGIN_LOCK_MINUTES` | 5 / 5 | wrong-password lock-out |
 | `SESSION_DAYS` | 30 | sign-in session lifetime |
 | `DEMO_REFRESH_DAYS` | 7 | demo restaurant data is regenerated when older than this |
+| `TRUST_PROXY` | 0 | `1` behind Cloudflare Tunnel / Caddy / Nginx, so real visitor IPs are used |
+| `TZ` | system | time zone for "today", daily reports and the closing backup (deploy files use `Asia/Kolkata`) |
 
 Retention per backup kind, request size limits, KOT/recipe/variant limits, weak-password list and the forecast model
 (history window, horizon, likely-range width, minimum data) are also in `server/config.ts`. Browser presets and timings are

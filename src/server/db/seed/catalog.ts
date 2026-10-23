@@ -106,3 +106,12 @@ export const CUSTOMERS: [string, string, string | null][] = [
   ['Arjun Patel', '9890099999', null], ['Meera Joshi', '9800012345', '1985-09-09'],
   ['Farhan Khan', '9811122334', null], ['Lakshmi Rao', '9822233445', '1979-12-25'],
 ];
+
+/** The five demo logins created on a first run (name, username, password, role). Change them before going live. */
+export const DEMO_ACCOUNTS: [name: string, username: string, password: string, role: string][] = [
+  ['Restaurant Owner', 'admin', 'admin123', 'admin'],
+  ['Floor Manager', 'manager', 'manager123', 'manager'],
+  ['Cashier Desk', 'cashier', 'cashier123', 'cashier'],
+  ['Ravi (Captain)', 'waiter', 'waiter123', 'waiter'],
+  ['Kitchen Display', 'kitchen', 'kitchen123', 'kitchen'],
+];

@@ -1,8 +1,10 @@
 // The built-in demo restaurant: full sample data that admins open (in its own tab) for reference.
 // It lives in its own database, is never backed up, and is regenerated when it gets old.
 import { config } from '../config.js';
-import { get, getSettings, recreateTenant, registerTenant, run, tenantExists, openTenant, withTenant, type Tenant } from '../db/index.js';
+import { all, get, getSettings, recreateTenant, registerTenant, run, tenantExists, openTenant, withTenant, type Tenant } from '../db/index.js';
+import crypto from 'node:crypto';
 import { seed, ensureSettings } from '../db/seed/index.js';
+import { hashPassword } from '../core/passwords.js';
 import { log } from '../core/log.js';
 import { todayStr } from '../core/util.js';
 
@@ -12,6 +14,8 @@ function fill(t: Tenant) {
   withTenant(t, () => {
     seed({ content: 'demo', name });
     ensureSettings();
+    // Nobody signs into the demo with a password: it is opened from an admin panel with a one-tab session
+    for (const u of all('SELECT id FROM users')) run('UPDATE users SET password=? WHERE id=?', hashPassword(crypto.randomBytes(18).toString('hex')), u.id);
     for (const [k, v] of [['tagline', tagline], ['demo_seeded_at', todayStr()], ['demo_data', '1']]) {
       run('INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value', k, v);
     }

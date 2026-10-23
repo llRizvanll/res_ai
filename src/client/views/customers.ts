@@ -154,7 +154,7 @@ async function detail(id: number) {
       <h4>Order history</h4>
       ${c.orders.length
         ? `<table class="table compact"><thead><tr><th>Order</th><th>Date</th><th>Type</th><th>Status</th><th class="num">Total</th></tr></thead><tbody>${c.orders
-            .map((o) => `<tr class="click" onclick="location.hash='#/orders?id=${o.id}'"><td>${esc(o.order_no)}</td><td>${fmtDateTime(o.created_at)}</td><td>${esc(label(ORDER_TYPE_LABELS, o.type))}</td><td>${statusBadge(o.status)}</td><td class="num">${money(o.total)}</td></tr>`)
+            .map((o) => `<tr class="click" data-href="#/orders?id=${o.id}"><td>${esc(o.order_no)}</td><td>${fmtDateTime(o.created_at)}</td><td>${esc(label(ORDER_TYPE_LABELS, o.type))}</td><td>${statusBadge(o.status)}</td><td class="num">${money(o.total)}</td></tr>`)
             .join('')}</tbody></table>`
         : emptyState('No orders yet')}`,
     footer: `${ctx.can(ROLE_GROUPS.MGR) ? '<button class="btn ghost danger-text" data-a="del">Delete</button>' : ''}<span class="grow"></span><button class="btn" data-a="edit">Edit</button>`,

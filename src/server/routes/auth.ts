@@ -1,20 +1,23 @@
 // Sign-in, sign-out and password changes, with brute-force lock-out.
 import crypto from 'node:crypto';
-import { fail, type User, ALL, api } from '../core/http.js';
+import { fail, type User, ALL, api, clientIp } from '../core/http.js';
 import { publicUser } from '../core/session.js';
 import { checkPassword } from '../core/validate.js';
 import { audit, onAudit } from '../core/audit.js';
 import { hashPassword, verifyPassword } from '../core/passwords.js';
 import { get, run, getSettings, current, isDemoSlug } from '../db/index.js';
 import { config } from '../config.js';
+import { resetWeakPasswordCheck } from '../services/security.js';
 
 // Brute-force protection: 5 wrong passwords for a username from one device locks it for 5 minutes
 const failedLogins = new Map<string, { n: number; until: number }>();
 
 api.post('/api/auth/login', null, (c) => {
   const { body, req } = c;
+  // The demo is only opened from an admin panel, never signed into directly
+  if (isDemoSlug(current().slug)) fail(404, 'Restaurant not found');
   const username = String(body.username || '').trim().toLowerCase();
-  const key = `${current().slug}|${username}|${req.socket.remoteAddress}`;
+  const key = `${current().slug}|${username}|${clientIp(req)}`;
   const lock = failedLogins.get(key);
   if (lock && lock.until > Date.now()) {
     fail(429, `Too many wrong attempts. Try again in ${Math.ceil((lock.until - Date.now()) / 60000)} minute(s).`);
@@ -50,6 +53,7 @@ api.post('/api/auth/password', ALL, ({ body, user }) => {
   checkPassword(body.password);
   if (String(body.password) === String(body.current)) fail(400, 'The new password must be different from the current one');
   run('UPDATE users SET password=? WHERE id=?', hashPassword(body.password), user.id);
+  resetWeakPasswordCheck();
 });
 
 

@@ -7,8 +7,18 @@ let ctx: AppCtx;
 let current: { mod: ViewModule | null; cleanup: (() => void) | null } = { mod: null, cleanup: null };
 let seq = 0;
 
+let linksWired = false;
+
 export function startRouter(c: AppCtx) {
   ctx = c;
+  // Clickable rows/cards use data-href instead of inline onclick (inline scripts are blocked by the security policy)
+  if (!linksWired) {
+    linksWired = true;
+    document.addEventListener('click', (e) => {
+      const el = (e.target as HTMLElement).closest<HTMLElement>('[data-href]');
+      if (el?.dataset.href) location.hash = el.dataset.href;
+    });
+  }
   window.onhashchange = route;
   route();
 }

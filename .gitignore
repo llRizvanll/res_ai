@@ -3,3 +3,5 @@ data/
 dist/
 public/js/
 .DS_Store
+
+.env

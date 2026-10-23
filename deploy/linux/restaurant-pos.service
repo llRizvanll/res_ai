@@ -1,0 +1,23 @@
+# systemd unit: starts the POS at boot and restarts it if it stops.
+# Install:  sudo cp deploy/linux/restaurant-pos.service /etc/systemd/system/
+#           sudo systemctl daemon-reload && sudo systemctl enable --now restaurant-pos
+# Logs:     journalctl -u restaurant-pos -f     (also data/logs/)
+[Unit]
+Description=Restaurant POS
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pos
+WorkingDirectory=/opt/restaurant-pos
+EnvironmentFile=-/opt/restaurant-pos/.env
+Environment=TZ=Asia/Kolkata
+ExecStart=/usr/bin/node --no-warnings dist/server/supervisor.js
+Restart=always
+RestartSec=3
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

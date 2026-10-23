@@ -485,3 +485,37 @@ describe('Demo restaurant (reference)', () => {
     assert.equal((await ok('GET', '/customers?q=9777700001', undefined, r.token)).length, 0, 'demo edits are gone after reset');
   });
 });
+
+describe('Ready for internet access', () => {
+  test('a public health check for monitors reveals nothing', async () => {
+    const r = await call('GET', '/health');
+    assert.equal(r.status, 200);
+    assert.deepEqual(r.data, { ok: true });
+  });
+  test('every response carries browser security headers', async () => {
+    for (const url of [`${BASE}/health`, `http://localhost:${PORT}/`]) {
+      const res = await fetch(url);
+      assert.match(res.headers.get('content-security-policy') || '', /script-src 'self'/);
+      assert.equal(res.headers.get('x-content-type-options'), 'nosniff');
+      assert.equal(res.headers.get('x-frame-options'), 'DENY');
+    }
+  });
+  test('nobody can sign into the demo restaurant directly', async () => {
+    await ok('POST', '/demo/open', {}, admin); // make sure it exists
+    await rejects('POST', '/auth/login', { restaurant: 'demo', username: 'admin', password: 'admin123' }, undefined, 404);
+  });
+  test('owners are warned while staff still use the demo passwords', async () => {
+    const before = await ok('GET', '/admin/health', undefined, admin);
+    const warn = (h: J) => h.warnings.find((w: string) => /demo password/.test(w)) || '';
+    assert.match(warn(before), /Floor Manager/);
+    await ok('POST', '/auth/password', { current: 'manager123', password: 'Manager-Strong-42' }, manager);
+    const after = await ok('GET', '/admin/health', undefined, admin);
+    assert.doesNotMatch(warn(after), /Floor Manager/, 'warning clears right after the password change');
+  });
+  test('without TRUST_PROXY, forwarded IP headers are ignored (cannot be spoofed)', async () => {
+    await fetch(`${BASE}/auth/login`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Forwarded-For': '6.6.6.6' }, body: JSON.stringify({ username: 'nobody', password: 'x' }) });
+    const log = (await ok('GET', '/activity?action=auth', undefined, admin)).filter((e: J) => e.action === 'auth.login_failed');
+    assert.ok(log.length > 0);
+    assert.ok(log.every((e: J) => e.ip !== '6.6.6.6'));
+  });
+});

@@ -7,6 +7,7 @@ import { hashPassword } from '../core/passwords.js';
 import { all, get, run, tx } from '../db/index.js';
 import { safeguard } from '../services/backup.js';
 import { STAFF_USERNAME_RE } from '../../shared/domain.js';
+import { resetWeakPasswordCheck } from '../services/security.js';
 
 api.get('/api/users', ADMIN, () =>
   all('SELECT id, name, username, role, phone, active, created_at FROM users ORDER BY active DESC, role, name'),
@@ -37,6 +38,7 @@ api.put('/api/users/:id', ADMIN, ({ params, body, user }) => {
     }
     if (!active || body.password) run('DELETE FROM sessions WHERE user_id=?', u.id);
   });
+  resetWeakPasswordCheck();
 });
 
 

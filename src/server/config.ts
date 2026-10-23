@@ -9,6 +9,8 @@ const int = (name: string, def: number, min: number, max = Number.MAX_SAFE_INTEG
 };
 
 export const config = Object.freeze({
+  /** Set TRUST_PROXY=1 when running behind Cloudflare Tunnel, Caddy, Nginx… so real visitor IPs are used */
+  trustProxy: process.env.TRUST_PROXY === '1',
   /** Number formatting in generated text (Indian grouping: 1,00,000) */
   locale: 'en-IN',
   port: int('PORT', 3000, 1, 65535),

@@ -52,6 +52,12 @@ Settings → Data, reset & backup shows the status and has a **Run full check** 
 
 Recommended: set the off-site folder on day one, and use `npm start` (not `start:once`) on the shop computer.
 
+## Deploy it
+
+See **[DEPLOYMENT.md](DEPLOYMENT.md)**. In short: run it on a computer in the restaurant (free, keeps billing when the
+internet is down) with free remote access via Tailscale or Cloudflare Tunnel, or on a small Mumbai/Bangalore cloud
+server with `docker compose up -d` (~₹300–600/month). Production start: `npm ci && npm run build && npm run start:prod`.
+
 ## Run it
 
 Requires **Node.js 22.5+** (uses the built-in `node:sqlite`, so there are no native dependencies).

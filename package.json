@@ -5,7 +5,7 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": ">=22.5"
+    "node": ">=22.9"
   },
   "scripts": {
     "build": "tsc -p tsconfig.server.json && tsc -p tsconfig.client.json",
@@ -14,7 +14,8 @@
     "watch": "tsc -p tsconfig.client.json --watch --preserveWatchOutput",
     "typecheck": "tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.client.json --noEmit",
     "reset": "npm run build && node --no-warnings dist/server/reset-cli.js",
-    "test": "npm run build && node --test --test-reporter=spec 'dist/tests/*.test.js'"
+    "test": "npm run build && node --test --test-reporter=spec 'dist/tests/*.test.js'",
+    "start:prod": "node --no-warnings --env-file-if-exists=.env dist/server/supervisor.js"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

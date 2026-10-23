@@ -5,12 +5,15 @@ import { count, STARTED_AT } from '../../core/util.js';
 import { log } from '../../core/log.js';
 import { all, get, run, getSettings, current, isHealthy, isDemoSlug } from '../../db/index.js';
 import { listBackups, mirrorDir, AUTO_INTERVAL_MIN } from '../../services/backup.js';
+import { demoPasswordAccounts } from '../../services/security.js';
 
 function healthWarnings(): string[] {
   if (isDemoSlug(current().slug)) return []; // the demo is never backed up on purpose
   const w: string[] = [];
   const s = getSettings();
   if (s.recovery_note) w.push(s.recovery_note);
+  const weak = demoPasswordAccounts();
+  if (weak.length) w.push(`${weak.length} staff login(s) still use the demo password (${weak.join(', ')}). Change them in Staff & Roles before anyone can reach this system from outside.`);
   const t = current();
   if (t.lastBackupError) w.push(`The last automatic backup failed (${t.lastBackupError}). Check free disk space.`);
   const newest = listBackups()[0];
@@ -53,3 +56,6 @@ api.post('/api/admin/health/check', ADMIN, () => {
 api.post('/api/admin/recovery-note/dismiss', ADMIN, () => {
   run("DELETE FROM settings WHERE key='recovery_note'");
 });
+
+/** Public liveness check for Docker, uptime monitors and tunnels (reveals nothing about the restaurant) */
+api.get('/api/health', null, () => ({ ok: true }));
