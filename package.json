@@ -1,0 +1,21 @@
+{
+  "name": "dineflow-pos",
+  "version": "1.0.0",
+  "description": "DineFlow — browser-based restaurant management software for small and medium restaurants (POS, tables, KDS, menu, inventory, CRM, reports).",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.server.json && tsc -p tsconfig.client.json",
+    "start": "npm run build && node --no-warnings dist/server/server.js",
+    "watch": "tsc -p tsconfig.client.json --watch --preserveWatchOutput",
+    "typecheck": "tsc -p tsconfig.server.json --noEmit && tsc -p tsconfig.client.json --noEmit",
+    "reset": "rm -rf data && echo 'Data folder removed. Demo data will be recreated on next start.'"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.6.3"
+  }
+}
