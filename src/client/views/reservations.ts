@@ -33,7 +33,7 @@ export async function render(el: HTMLElement, _p: Record<string, string>, _ctx: 
 async function load() {
   const t = today();
   const [from, to] =
-    range === 'today' ? [t, t] : range === 'week' ? [t, addDays(t, 7)] : range === 'past' ? [addDays(t, -30), addDays(t, -1)] : [t, '9999-12-31'];
+    range === 'today' ? [t, t] : range === 'week' ? [t, addDays(t, 6)] : range === 'past' ? [addDays(t, -30), addDays(t, -1)] : [t, '9999-12-31'];
   list = await api.get<Reservation[]>(`/reservations?from=${from}&to=${to}`);
   root!.querySelectorAll<HTMLElement>('[data-r]').forEach((b) => b.classList.toggle('on', b.dataset.r === range));
   const byDay = new Map<string, Reservation[]>();

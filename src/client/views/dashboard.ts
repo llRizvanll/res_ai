@@ -65,8 +65,8 @@ async function load(ctx?: AppCtx) {
   });
   const avg = d.today.orders ? d.today.sales / d.today.orders : 0;
   const delta = d.yesterday.sales ? ((d.today.sales - d.yesterday.sales) / d.yesterday.sales) * 100 : 0;
-  const isMgr = ctx ? ctx.can(ROLE_GROUPS.MGR) : true;
   if (ctx) dashCtx = ctx;
+  const isMgr = !!(ctx ?? dashCtx)?.can(ROLE_GROUPS.MGR);
   // Set-up and backup prompts belong to the real restaurant, not the demo
   const isAdmin = !!dashCtx?.can(ROLE_GROUPS.ADMIN) && !dashCtx?.demo;
   const [setup, health, reminder] = isAdmin

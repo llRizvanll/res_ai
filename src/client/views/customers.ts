@@ -70,7 +70,7 @@ export async function render(el: HTMLElement, _p: Record<string, string>, c: App
 async function load() {
   list = await api.get<Customer[]>(`/customers?limit=1000&q=${encodeURIComponent(q)}`);
   const repeat = list.filter((c) => c.visits > 1).length;
-  const thisMonth = new Date().toISOString().slice(5, 7);
+  const thisMonth = String(new Date().getMonth() + 1).padStart(2, '0');
   const bdays = list.filter((c) => c.birthday && c.birthday.slice(5, 7) === thisMonth).length;
   $('#c-kpis', root!).innerHTML = `
     <div class="kpi"><small>Customers</small><b>${list.length}</b></div>

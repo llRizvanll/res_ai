@@ -24,8 +24,10 @@ api.post('/api/auth/login', null, (c) => {
   }
   const u = get('SELECT * FROM users WHERE username=? AND active=1', username);
   if (!u || !verifyPassword(String(body.password || ''), u.password)) {
-    const n = (lock && lock.until > Date.now() ? lock.n : lock?.n || 0) + 1;
-    failedLogins.set(key, { n, until: n >= config.security.lockAfterFailures ? Date.now() + config.security.lockMinutes * 60_000 : 0 });
+    // An expired lock starts a fresh set of attempts. Keeping the old count re-locked on the next typo.
+    const n = (lock && (lock.until === 0 || lock.until > Date.now()) ? lock.n : 0) + 1;
+    const until = n >= config.security.lockAfterFailures ? Date.now() + config.security.lockMinutes * 60_000 : 0;
+    failedLogins.set(key, { n, until });
     audit(c, 'auth.login_failed', `Failed sign-in for “${username.slice(0, 40)}”`, { as: u ? (u as User) : null });
     if (n >= config.security.lockAfterFailures) fail(429, 'Too many wrong attempts. Sign-in is locked for 5 minutes.');
     fail(401, 'Invalid username or password');
