@@ -10,7 +10,7 @@
 .swatch.on { box-shadow: 0 0 0 2px var(--ink); }
 .swatches input[type='color'] { width: 44px; height: 36px; padding: 2px; cursor: pointer; }
 .mode-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.mode-card { border: 2px solid var(--line); border-radius: 10px; padding: 10px; cursor: pointer; background: var(--card); text-align: left; font-weight: 600; }
+.mode-card { border: 2px solid var(--line); border-radius: 10px; padding: 10px; cursor: pointer; background: var(--card); text-align: start; font-weight: 600; }
 .mode-card.on { border-color: var(--brand); }
 .mode-card i { display: block; height: 46px; border-radius: 6px; margin-bottom: 8px; border: 1px solid var(--line); }
 .mode-card i.light { background: linear-gradient(90deg, #161b26 25%, #f4f6f9 25%); }

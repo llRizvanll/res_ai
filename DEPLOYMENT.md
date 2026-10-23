@@ -1,4 +1,4 @@
-# Deploying the Restaurant POS
+# Deploying MyretailCare
 
 ## Which option should I choose?
 
@@ -57,8 +57,9 @@ npm run build
 npm run start:prod
 ```
 
-Open <http://localhost:3000>. The start-up message also prints the **Wi-Fi address**
-(e.g. `http://192.168.1.8:3000`). Open that on tablets and phones in the shop.
+Open <http://localhost:3000> for the front page and press **Sign in**, or go straight to <http://localhost:3000/app/>.
+The start-up message also prints the **Wi-Fi address** (e.g. `http://192.168.1.8:3000/app/`). Open that on tablets
+and phones in the shop and bookmark it.
 Tip: give the PC a fixed IP in your router (DHCP reservation) so that address never changes.
 
 ### 2. Start automatically

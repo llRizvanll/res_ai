@@ -78,9 +78,9 @@ server.listen(config.port, () => {
     .flat()
     .filter((n): n is os.NetworkInterfaceInfo => !!n && n.family === 'IPv4' && !n.internal)
     .map((n) => `http://${n.address}:${config.port}`);
-  console.log(`\n  Restaurant POS server is running`);
-  console.log(`  ➜ This computer:  http://localhost:${config.port}`);
-  for (const u of lan) console.log(`  ➜ Other devices:  ${u}   (tablets / phones on the same Wi-Fi)`);
+  console.log(`\n  MyretailCare server is running`);
+  console.log(`  ➜ This computer:  http://localhost:${config.port}        (sign in: http://localhost:${config.port}/app/)`);
+  for (const u of lan) console.log(`  ➜ Other devices:  ${u}/app/   (tablets / phones on the same Wi-Fi)`);
   console.log(`  Data folder: ${DATA_DIR}`);
   const ts = realTenants();
   console.log(`  Restaurants: ${ts.map((t) => withTenant(t, () => `${getSettings().name} [${t.slug}]`)).join(', ')}`);

@@ -3,6 +3,8 @@ import type { AppCtx } from '../core/types/app.js';
 import { $, $$, esc } from '../core/dom.js';
 import { api } from '../core/api.js';
 import { getDevicePref, setDevicePref, type ThemeMode } from '../core/theme.js';
+import { currentLang, LANGUAGES, setLang, type Lang } from '../core/i18n.js';
+import { dateLocale } from '../core/format.js';
 import { UI_CONFIG } from '../config.js';
 import { brandBlock } from './branding.js';
 import { formModal, toast } from '../ui/index.js';
@@ -45,6 +47,8 @@ export function renderLayout(app: HTMLElement, ctx: AppCtx, onSignOut: () => voi
                 <button data-mode="light">Light</button>
                 <button data-mode="dark">Dark</button>
                 <button data-mode="system">Match system</button>
+                <div class="dd-label">Language on this device</div>
+                ${LANGUAGES.map((l) => `<button data-lang="${l.code}" lang="${l.code}" data-no-i18n>${l.label}</button>`).join('')}
                 <hr>
                 <button data-act="password">Change password</button>
                 <button data-act="switch">Switch restaurant</button>
@@ -70,11 +74,14 @@ function wireUserMenu(onSignOut: () => void) {
     dd.hidden = !dd.hidden;
     const pref = getDevicePref() || '';
     $$<HTMLButtonElement>('[data-mode]', dd).forEach((b) => b.classList.toggle('on', b.dataset.mode === pref));
+    $$<HTMLButtonElement>('[data-lang]', dd).forEach((b) => b.classList.toggle('on', b.dataset.lang === currentLang()));
   });
   document.addEventListener('click', () => (dd.hidden = true));
   dd.addEventListener('click', async (e) => {
     const mode = (e.target as HTMLElement).dataset.mode;
     if (mode !== undefined) setDevicePref((mode || null) as ThemeMode | null);
+    const pick = (e.target as HTMLElement).dataset.lang as Lang | undefined;
+    if (pick && pick !== currentLang()) setLang(pick);
     const act = (e.target as HTMLElement).dataset.act;
     if (act === 'logout' || act === 'switch') {
       await api.post('/auth/logout').catch(() => {});
@@ -100,7 +107,7 @@ function wireUserMenu(onSignOut: () => void) {
 function startClock() {
   const tick = () => {
     const c = document.getElementById('clock');
-    if (c) c.textContent = new Date().toLocaleString(UI_CONFIG.locale, { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    if (c) c.textContent = new Date().toLocaleString(dateLocale(), { weekday: 'short', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
   };
   tick();
   clearInterval(clockTimer);

@@ -1,0 +1,17 @@
+/* Landing page: language switch and the Arabic (right-to-left) reading direction */
+.lang-btn { height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: 700 14px var(--font); cursor: pointer; }
+.lang-btn:focus-visible { outline: none; box-shadow: 0 0 0 4px var(--brand-ring); }
+.nav-links .only-small { display: none; }
+
+[dir='rtl'] body, [dir='rtl'] .btn, [dir='rtl'] .lang-btn { font-family: 'Geeza Pro', 'Noto Sans Arabic', 'Segoe UI', Tahoma, var(--font); }
+[dir='rtl'] h1, [dir='rtl'] h2, [dir='rtl'] h3, [dir='rtl'] h4, [dir='rtl'] .stats b, [dir='rtl'] .price, [dir='rtl'] .eyebrow { letter-spacing: 0; }
+[dir='rtl'] .hero h1 { line-height: 1.3; }
+/* Arrows point the way the slides move */
+[dir='rtl'] .tour-nav, [dir='rtl'] .lb-nav { scale: -1 1; }
+
+@media (max-width: 520px) {
+  .lang-btn { height: 36px; padding: 0 10px; font-size: 13px; }
+  /* Small phones: Sign in moves into the menu (the hero has a big Sign in button too) */
+  .nav-actions [data-signin] { display: none; }
+  .nav-links .only-small { display: block; color: var(--brand); font-weight: 700; }
+}

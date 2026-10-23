@@ -7,6 +7,7 @@ import { api, auth, restaurant } from '../core/api.js';
 import { brandBlock, currentBranding, paintBrand } from './branding.js';
 import { homeFor } from './nav.js';
 import { toast } from '../ui/index.js';
+import { currentLang, LANGUAGES, setLang, type Lang } from '../core/i18n.js';
 
 interface RestaurantInfo extends Branding {
   slug: string;
@@ -40,6 +41,10 @@ export function renderLogin(app: HTMLElement, message: string, onSignedIn: (user
             ${DEMO_LOGINS.map(([u, p, r]) => `<button type="button" class="chip" data-u="${u}" data-p="${p}">${r}</button>`).join('')}
           </div>
         </details>
+        <div class="login-foot">
+          <a class="login-tour" href="/">New here? Take the product tour →</a>
+          <span class="login-lang" data-no-i18n>${LANGUAGES.map((l) => `<button type="button" class="${l.code === currentLang() ? 'on' : ''}" data-lang="${l.code}" lang="${l.code}">${l.label}</button>`).join('')}</span>
+        </div>
       </form>
     </div>`;
   const form = $<HTMLFormElement>('#login-form');
@@ -68,6 +73,7 @@ export function renderLogin(app: HTMLElement, message: string, onSignedIn: (user
       form.requestSubmit();
     }),
   );
+  $$<HTMLButtonElement>('[data-lang]', form).forEach((b) => b.addEventListener('click', () => b.dataset.lang !== currentLang() && setLang(b.dataset.lang as Lang)));
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const fd = new FormData(form);

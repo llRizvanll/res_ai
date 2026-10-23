@@ -2,7 +2,7 @@
 /* ---------------- line chart & finance pages */
 .line-chart svg { width: 100%; height: auto; display: block; overflow: visible; }
 .lc-legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); margin-bottom: 6px; }
-.lc-legend i { display: inline-block; width: 12px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.lc-legend i { display: inline-block; width: 12px; height: 3px; border-radius: 2px; margin-inline-end: 6px; vertical-align: middle; }
 .lc-grid { stroke: var(--line); stroke-width: 1; }
 .lc-zero { stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 3 3; }
 .lc-line { fill: none; stroke-width: 2.4; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
@@ -19,15 +19,15 @@
 .period-label { font-weight: 700; min-width: 170px; text-align: center; }
 .statement td { padding: 7px 12px; }
 .statement .sec td { background: var(--surface); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-2); }
-.statement .sub td:first-child { padding-left: 28px; color: var(--ink-2); }
+.statement .sub td:first-child { padding-inline-start: 28px; color: var(--ink-2); }
 .statement .total td { font-weight: 700; border-top: 1px solid var(--line-strong); }
 .statement .grand td { font-weight: 800; font-size: 15px; border-top: 2px solid var(--ink); }
 .statement .neg { color: var(--danger); }
 .statement .memo td { color: var(--muted); font-size: 12.5px; }
 .months-table th, .months-table td { white-space: nowrap; }
-.months-table td:first-child { position: sticky; left: 0; background: var(--card); font-weight: 600; }
+.months-table td:first-child { position: sticky; inset-inline-start: 0; background: var(--card); font-weight: 600; }
 .advice { display: flex; flex-direction: column; gap: 8px; }
-.advice div { padding: 10px 12px; border-radius: 8px; border-left: 4px solid var(--info); background: var(--info-50); }
+.advice div { padding: 10px 12px; border-radius: 8px; border-inline-start: 4px solid var(--info); background: var(--info-50); }
 .advice .good { border-color: var(--ok); background: var(--ok-50); }
 .advice .warn { border-color: var(--warn); background: var(--warn-50); }
 .advice .bad { border-color: var(--danger); background: var(--danger-50); }
@@ -36,9 +36,9 @@
 .meter > div.bad { background: var(--danger); }
 .meter > span { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); }
 .figs { display: grid; grid-template-columns: 1fr auto; gap: 6px 16px; font-size: 13.5px; }
-.figs b { text-align: right; font-variant-numeric: tabular-nums; }
+.figs b { text-align: end; font-variant-numeric: tabular-nums; }
 .figs .hl { font-size: 16px; color: var(--brand); }
 .note { font-size: 12px; color: var(--muted); margin-top: 8px; }
 .stack-bar { display: flex; height: 22px; border-radius: 6px; overflow: hidden; background: var(--hover); }
 .stack-bar div { height: 100%; }
-i.dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
+i.dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-inline-end: 8px; vertical-align: -1px; }

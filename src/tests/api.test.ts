@@ -500,6 +500,21 @@ describe('Ready for internet access', () => {
       assert.equal(res.headers.get('x-frame-options'), 'DENY');
     }
   });
+  test('the landing page is the front page, the app lives at /app/, and nothing redirects off-site', async () => {
+    const root = `http://localhost:${PORT}`;
+    assert.match(await (await fetch(`${root}/`)).text(), /Run your whole restaurant/);
+    const bare = await fetch(`${root}/app`, { redirect: 'manual' });
+    assert.equal(bare.status, 301);
+    assert.equal(bare.headers.get('location'), '/app/');
+    const app = await (await fetch(`${root}/app/`)).text();
+    assert.match(app, /js\/client\/app\.js/, 'the app shell loads at /app/');
+    assert.match(await (await fetch(`${root}/dashboard`)).text(), /js\/client\/app\.js/, 'unknown pages fall back to the app');
+    const old = await fetch(`${root}/home`, { redirect: 'manual' });
+    assert.equal(old.headers.get('location'), '/', 'the old landing address still works');
+    const sneaky = await fetch(`${root}//app`, { redirect: 'manual' });
+    assert.ok(!(sneaky.headers.get('location') || '').startsWith('//'), 'a "//host" path must not become a protocol-relative redirect');
+    assert.equal((await fetch(`${root}/site/img/print-bill.jpg`)).headers.get('content-type'), 'image/jpeg');
+  });
   test('nobody can sign into the demo restaurant directly', async () => {
     await ok('POST', '/demo/open', {}, admin); // make sure it exists
     await rejects('POST', '/auth/login', { restaurant: 'demo', username: 'admin', password: 'admin123' }, undefined, 404);

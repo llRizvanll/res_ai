@@ -1,6 +1,7 @@
 // Display formatting: money, numbers, dates and times, and labels for coded values.
 import { UI_CONFIG } from '../config.js';
 import { ORDER_TYPE_LABELS, PAYMENT_MODE_LABELS } from '../../shared/domain.js';
+import { isRtl } from './i18n.js';
 
 let currency = '₹';
 export const setCurrency = (c: string) => (currency = c || '₹');
@@ -19,11 +20,13 @@ export const compact = (n: number): string => {
 };
 export const qtyFmt = (n: number): string => String(Math.round(n * 1000) / 1000);
 
+/** Dates and times read naturally in the screen language (Arabic month names, Latin digits); amounts keep one format */
+export const dateLocale = () => (isRtl() ? 'ar-u-nu-latn' : UI_CONFIG.locale);
 export const parseDate = (s: string): Date => new Date(s.includes('T') || s.length <= 10 ? s : s.replace(' ', 'T'));
 export const fmtDate = (s: string | null | undefined): string =>
-  s ? parseDate(s.length === 10 ? s + 'T00:00:00' : s).toLocaleDateString(UI_CONFIG.locale, { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+  s ? parseDate(s.length === 10 ? s + 'T00:00:00' : s).toLocaleDateString(dateLocale(), { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 export const fmtTime = (s: string | null | undefined): string =>
-  s ? parseDate(s).toLocaleTimeString(UI_CONFIG.locale, { hour: '2-digit', minute: '2-digit' }) : '—';
+  s ? parseDate(s).toLocaleTimeString(dateLocale(), { hour: '2-digit', minute: '2-digit' }) : '—';
 export const fmtDateTime = (s: string | null | undefined): string => (s ? `${fmtDate(s)}, ${fmtTime(s)}` : '—');
 
 export function minutesSince(s: string): number {

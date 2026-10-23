@@ -32,11 +32,11 @@ function recordDownload(c: Ctx, name: string) {
 api.get('/api/backup', ADMIN, (c) => {
   const { res } = c;
   run('INSERT INTO backup_downloads (name, user_id, user_name) VALUES (?,?,?)', `current-${todayStr()}`, c.user.id, c.user.name);
-  const file = path.join(os.tmpdir(), `dineflow-backup-${Date.now()}.db`);
+  const file = path.join(os.tmpdir(), `myretailcare-backup-${Date.now()}.db`);
   exec(`VACUUM INTO '${file.replace(/'/g, "''")}'`);
   res.writeHead(200, {
     'Content-Type': 'application/octet-stream',
-    'Content-Disposition': `attachment; filename="dineflow-backup-${todayStr()}.db"`,
+    'Content-Disposition': `attachment; filename="myretailcare-backup-${todayStr()}.db"`,
   });
   fs.createReadStream(file).on('close', () => fs.rm(file, () => {})).pipe(res);
 });

@@ -4,13 +4,835 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#e8590c" />
-    <title>Restaurant POS</title>
+    <title>MyretailCare — restaurant software that runs in your browser</title>
+    <meta name="description" content="Billing, tables, kitchen display, menu, inventory, customers, expenses, P&amp;L and growth insights for small and medium restaurants. Runs on your own computer, works on the shop Wi-Fi, ₹0 per month." />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/css/app.css" />
+    <link rel="stylesheet" href="/site/css/base.css" />
+    <link rel="stylesheet" href="/site/css/hero.css" />
+    <link rel="stylesheet" href="/site/css/sections.css" />
+    <link rel="stylesheet" href="/site/css/tour.css" />
+    <link rel="stylesheet" href="/site/css/lightbox.css" />
+    <link rel="stylesheet" href="/site/css/rtl.css" />
+    <link rel="stylesheet" href="/site/css/extras.css" />
+    <script src="/site/i18n/ar.js" defer></script>
+    <script src="/site/home.js" defer></script>
   </head>
   <body>
-    <div id="app"><div class="loading"><span class="spinner"></span>Loading…</div></div>
-    <div id="toasts" aria-live="polite"></div>
-    <script type="module" src="/js/client/app.js"></script>
+    <header class="nav" id="top">
+      <div class="wrap nav-in">
+        <a class="logo" href="#top"><span class="logo-mark">M</span>MyretailCare</a>
+        <nav class="nav-links" id="nav-links" aria-label="Sections">
+          <a href="#features">Features</a>
+          <a href="#details">Details</a>
+          <a href="#screens">Tour</a>
+          <a href="#safety">Data safety</a>
+          <a href="#deploy">Deploy</a>
+          <a href="#faq">FAQ</a>
+          <a class="only-small" href="/app/" data-signin>Sign in</a>
+        </nav>
+        <div class="nav-actions">
+          <button class="lang-btn" id="lang-btn" type="button" data-i18n-skip lang="ar">عربي</button>
+          <button class="icon-btn" id="theme-btn" type="button" aria-label="Switch light or dark theme">
+            <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" /><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" /></svg>
+            <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" /></svg>
+          </button>
+          <a class="btn primary sm" href="/app/" data-signin>Sign in</a>
+          <button class="icon-btn menu-btn" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav-links">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- ================= HERO ================= -->
+      <section class="hero">
+        <div class="hero-glow" aria-hidden="true"></div>
+        <div class="wrap hero-copy reveal">
+          <span class="pill"><span class="dot"></span> For cafés, dhabas, family restaurants &amp; cloud kitchens</span>
+          <h1>Run your whole restaurant<br /><span class="grad">from one browser tab.</span></h1>
+          <p class="lead">Billing, tables, kitchen display, menu, stock, customers, expenses, profit &amp; loss and growth insights — in one app that runs on your own counter PC. No monthly fee, no app installs, and it keeps billing when the internet drops.</p>
+          <div class="cta-row">
+            <a class="btn primary lg" href="/app/" data-signin>Sign in</a>
+            <a class="btn ghost lg" href="#screens">Take the tour</a>
+          </div>
+        </div>
+
+        <div class="wrap devices reveal">
+          <figure class="browser">
+            <div class="browser-bar"><i></i><i></i><i></i><span dir="ltr">myretailcare.com/app/#/dashboard</span></div>
+            <img class="theme-shot" src="/site/img/dashboard.jpg" data-light="/site/img/dashboard.jpg" data-dark="/site/img/dashboard-dark.jpg" width="1800" height="1125" alt="MyretailCare dashboard with today's sales, orders, tables and a 7-day sales chart" fetchpriority="high" />
+          </figure>
+          <figure class="tablet">
+            <img src="/site/img/tablet-kds.jpg" width="1800" height="1251" alt="Kitchen display on a tablet with KOT tickets by status" loading="lazy" />
+          </figure>
+          <figure class="phone">
+            <img src="/site/img/mobile-pos.jpg" width="780" height="1688" alt="Captain taking an order on a phone" loading="lazy" />
+          </figure>
+        </div>
+
+        <div class="wrap stats reveal">
+          <div><b>₹0</b><span>per month, on your own computer</span></div>
+          <div><b>18+</b><span>screens, one app</span></div>
+          <div><b>5</b><span>staff roles with their own access</span></div>
+          <div><b>Offline</b><span>billing on the shop Wi-Fi</span></div>
+        </div>
+      </section>
+
+      <!-- ================= QUICK FEATURE STRIP ================= -->
+      <section class="strip">
+        <div class="wrap strip-in">
+          <span>Dine-in · Takeaway · Delivery</span><span>KOT &amp; kitchen display</span><span>GST bills (CGST + SGST)</span><span>Split payments</span><span>Recipe-based stock</span><span>Loyalty &amp; CRM</span><span>Recurring expenses</span><span>P&amp;L</span><span>Growth forecast</span><span>Daily backups</span>
+        </div>
+      </section>
+
+      <!-- ================= FEATURES (alternating) ================= -->
+      <section class="section" id="features">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <span class="eyebrow">Everything a restaurant runs on</span>
+            <h2>From the first KOT to the monthly P&amp;L</h2>
+            <p>Every screen below is a real screenshot of the app with its built-in demo restaurant.</p>
+          </div>
+
+          <article class="feature reveal">
+            <div class="f-copy">
+              <span class="tag">Billing / POS</span>
+              <h3>Bill a table in seconds</h3>
+              <p>Search by name or short code, filter veg / non-veg, pick variants like Half or Full, add notes, and send the order to the kitchen with one tap.</p>
+              <ul class="ticks">
+                <li>Dine-in, takeaway and delivery on one screen</li>
+                <li>GST split into CGST + SGST with automatic round-off</li>
+                <li>Discounts, notes, moving a table, voids with reasons</li>
+                <li>Save &amp; KOT, KOT &amp; Print, Print Bill</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/pos.jpg"><img src="/site/img/pos.jpg" width="1800" height="1125" alt="Billing screen with menu grid and a running cart" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature flip reveal">
+            <div class="f-copy">
+              <span class="tag">Settle</span>
+              <h3>Cash, UPI, card — or all three</h3>
+              <p>Split one bill across payment modes and see the remaining amount as you type. Payments are recorded, never charged, so there are no gateway fees.</p>
+              <ul class="ticks">
+                <li>Voided items stay visible, struck through, with the reason</li>
+                <li>Print the bill on settle, or later from Orders</li>
+                <li>Safe retries: a double-tap never bills twice</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/pos-settle.jpg"><img src="/site/img/pos-settle.jpg" width="1800" height="1125" alt="Settle dialog with split payment between cash, UPI and card" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature reveal">
+            <div class="f-copy">
+              <span class="tag">Printing</span>
+              <h3>Proper bills and KOTs, on any printer</h3>
+              <p>Print a GST tax invoice for the guest and a KOT for the kitchen — on a 58 / 80 mm thermal printer or any printer your computer can use. These are real prints from the app.</p>
+              <ul class="ticks">
+                <li><b>Bill:</b> your name, address, GSTIN and FSSAI; table, guests, customer and captain; every item with qty, rate and amount</li>
+                <li>Discount, CGST + SGST per slab, round-off, grand total and how it was paid</li>
+                <li><b>KOT:</b> table and captain at the top, big quantities, cooking notes under each dish, order notes at the bottom</li>
+                <li>Print from billing, the order history or the kitchen display — or auto-print KOTs and bills</li>
+              </ul>
+            </div>
+            <div class="receipts">
+              <figure class="paper bill" data-full="/site/img/print-bill.jpg"><img src="/site/img/print-bill.jpg" width="660" height="1334" alt="Printed tax invoice with items, GST and payment split" loading="lazy" /><figcaption>Bill · tax invoice</figcaption></figure>
+              <figure class="paper kot" data-full="/site/img/print-kot.jpg"><img src="/site/img/print-kot.jpg" width="660" height="548" alt="Printed kitchen order ticket with cooking notes" loading="lazy" /><figcaption>KOT · kitchen ticket</figcaption></figure>
+            </div>
+          </article>
+
+          <article class="feature flip reveal">
+            <div class="f-copy">
+              <span class="tag">Tables</span>
+              <h3>The whole floor at a glance</h3>
+              <p>See which tables are free, running or waiting for the bill, how long guests have been seated and what they've spent. Captains take orders from their phones.</p>
+              <ul class="ticks">
+                <li>Areas, seats and table names you set up yourself</li>
+                <li>Live on every device — no refresh needed</li>
+                <li>Long-waiting tables are highlighted</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/tables.jpg"><img src="/site/img/tables.jpg" width="1800" height="1125" alt="Table floor plan with free and occupied tables" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature reveal">
+            <div class="f-copy">
+              <span class="tag">Kitchen display</span>
+              <h3>No more lost paper KOTs</h3>
+              <p>Every KOT appears on the kitchen screen the moment it's sent. Cooks tap to move it from new to preparing to ready, and the floor sees it instantly.</p>
+              <ul class="ticks">
+                <li>Timers turn amber, then red, when a ticket waits too long</li>
+                <li>Item notes and variants are shown big and clear</li>
+                <li>Runs on any old tablet or TV browser</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/kds.jpg"><img src="/site/img/kds.jpg" width="1800" height="1125" alt="Kitchen display with KOT tickets" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature flip reveal">
+            <div class="f-copy">
+              <span class="tag">Menu &amp; recipes</span>
+              <h3>Your menu, your way</h3>
+              <p>Categories, variants with their own prices, short codes, GST slab per item, and availability you can switch off when an item runs out.</p>
+              <ul class="ticks">
+                <li>Link recipes to stock so ingredients deduct on every sale</li>
+                <li>Food cost flows into reports and the P&amp;L</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/menu-item.jpg"><img src="/site/img/menu-item.jpg" width="1800" height="1125" alt="Menu item editor with variants and recipe" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature reveal">
+            <div class="f-copy">
+              <span class="tag">Inventory</span>
+              <h3>Know what's running low before it runs out</h3>
+              <p>Record purchases with supplier and cost, log wastage, and let sales deduct stock automatically. Low-stock items show up on the dashboard.</p>
+              <ul class="ticks">
+                <li>Kg, litre, pieces, dozens, boxes, bottles and more</li>
+                <li>Full movement history per item</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/inventory.jpg"><img src="/site/img/inventory.jpg" width="1800" height="1125" alt="Inventory list with stock levels and low-stock warnings" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature flip reveal">
+            <div class="f-copy">
+              <span class="tag">Customers &amp; reservations</span>
+              <h3>Remember every regular</h3>
+              <p>Attach a customer to a bill by phone number to build visit history, favourite dishes and lifetime spend. Book tables by day or by week.</p>
+              <ul class="ticks">
+                <li>Loyalty points and customer notes</li>
+                <li>Today's reservations on the dashboard</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/customers.jpg"><img src="/site/img/customers.jpg" width="1800" height="1125" alt="Customer profile with visit history" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature reveal">
+            <div class="f-copy">
+              <span class="tag">Expenses</span>
+              <h3>Every rupee out, by day, week, month or year</h3>
+              <p>Log rent, salaries, groceries, gas and electricity. Set recurring expenses once and they appear on their own every week, month or year.</p>
+              <ul class="ticks">
+                <li>Category totals and period comparisons</li>
+                <li>Recurring rules you can pause or edit</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/expenses.jpg"><img src="/site/img/expenses.jpg" width="1800" height="1125" alt="Expenses by category for the month" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature flip reveal">
+            <div class="f-copy">
+              <span class="tag">Profit &amp; loss</span>
+              <h3>A real P&amp;L, not a guess</h3>
+              <p>Sales minus GST, food cost and expenses, month by month, with healthy ranges for food cost and margins coloured in so problems stand out.</p>
+              <ul class="ticks">
+                <li>Monthly and yearly views</li>
+                <li>Same period last year side by side</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/pnl.jpg"><img src="/site/img/pnl.jpg" width="1800" height="1125" alt="Profit and loss statement" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature reveal">
+            <div class="f-copy">
+              <span class="tag">Growth &amp; insights</span>
+              <h3>Where you're heading, in plain words</h3>
+              <p>A sales projection with a likely range, best days and hours, top and slow dishes, and practical advice drawn from your own numbers.</p>
+              <ul class="ticks">
+                <li>Honest about thin data — it says when history is too short</li>
+                <li>Growth compared fairly, like for like</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/insights.jpg"><img src="/site/img/insights.jpg" width="1800" height="1125" alt="Growth and insights page with forecast" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature flip reveal">
+            <div class="f-copy">
+              <span class="tag">Activity log</span>
+              <h3>Who did what, and when</h3>
+              <p>Every void, discount, delete, reset and setting change is recorded against the staff account that made it, with the time and the details.</p>
+              <ul class="ticks">
+                <li>Filter the log by person, action or date</li>
+                <li>Daily summary of who worked and what changed</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/activity.jpg"><img src="/site/img/activity.jpg" width="1800" height="1125" alt="Activity log of staff actions" loading="lazy" /></figure>
+          </article>
+
+          <article class="feature reveal">
+            <div class="f-copy">
+              <span class="tag">Your brand</span>
+              <h3>Your name, your logo, your colours</h3>
+              <p>Upload a logo, rename the restaurant, pick a brand colour and light or dark mode. Bills, the sign-in page and every screen follow along.</p>
+              <ul class="ticks">
+                <li>Run several restaurants, each with separate data</li>
+                <li>Business details and GSTIN printed on bills</li>
+              </ul>
+            </div>
+            <figure class="shot" data-full="/site/img/settings-branding.jpg"><img src="/site/img/settings-branding.jpg" width="1800" height="1125" alt="Branding settings with logo and colour" loading="lazy" /></figure>
+          </article>
+
+          <div class="more-head reveal">
+            <h3>More screens worth a look</h3>
+            <p>Click any picture to open it full size.</p>
+          </div>
+          <div class="more reveal">
+            <article class="mcard"><figure class="shot" data-full="/site/img/orders.jpg"><img src="/site/img/orders.jpg" width="1800" height="1125" alt="Order history with bill detail" loading="lazy" /></figure><div><h4>Order history</h4><p>Find any bill by order number, customer, phone or table. Open it to see items, KOTs, payments and voids, reprint it, or export the list to Excel.</p></div></article>
+            <article class="mcard"><figure class="shot" data-full="/site/img/reservations.jpg"><img src="/site/img/reservations.jpg" width="1800" height="1125" alt="Reservations in week view" loading="lazy" /></figure><div><h4>Reservations</h4><p>Take bookings with name, phone, guests and table. Switch between day and week view so busy evenings never surprise you.</p></div></article>
+            <article class="mcard"><figure class="shot" data-full="/site/img/expenses-recurring.jpg"><img src="/site/img/expenses-recurring.jpg" width="1800" height="1125" alt="Recurring expenses list" loading="lazy" /></figure><div><h4>Recurring expenses</h4><p>Rent on the 1st, salaries monthly, gas cylinders weekly — set them once and they're entered automatically, so the P&amp;L is always complete.</p></div></article>
+            <article class="mcard"><figure class="shot" data-full="/site/img/reports.jpg"><img src="/site/img/reports.jpg" width="1800" height="1125" alt="Sales reports with charts" loading="lazy" /></figure><div><h4>Reports</h4><p>Sales by day and by hour, category-wise sales, payment modes, order types, GST and expenses for any date range.</p></div></article>
+            <article class="mcard"><figure class="shot" data-full="/site/img/insights-advice.jpg"><img src="/site/img/insights-advice.jpg" width="1800" height="1125" alt="Advice drawn from the restaurant's own numbers" loading="lazy" /></figure><div><h4>Advice from your numbers</h4><p>Break-even point, weak weekdays, falling dishes and channel mix turned into short, practical suggestions.</p></div></article>
+            <article class="mcard"><figure class="shot" data-full="/site/img/staff.jpg"><img src="/site/img/staff.jpg" width="1800" height="1125" alt="Staff accounts and roles" loading="lazy" /></figure><div><h4>Staff &amp; roles</h4><p>Give every person their own login and role. Disable someone who leaves without losing their history.</p></div></article>
+            <article class="mcard"><figure class="shot" data-full="/site/img/setup.jpg"><img src="/site/img/setup.jpg" width="1800" height="1125" alt="Getting-started checklist" loading="lazy" /></figure><div><h4>Getting started checklist</h4><p>Branding, business details with GSTIN and FSSAI, billing &amp; tax, floor, menu, recipes, staff and passwords — ticked off as you go.</p></div></article>
+            <article class="mcard"><figure class="shot" data-full="/site/img/demo.jpg"><img src="/site/img/demo.jpg" width="1800" height="1125" alt="Demo restaurant page" loading="lazy" /></figure><div><h4>Demo restaurant</h4><p>A complete sample restaurant opens in its own tab for training and reference. It refreshes itself weekly and never mixes with your data.</p></div></article>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SMALL THINGS ================= -->
+      <section class="section" id="details">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <span class="eyebrow">The details</span>
+            <h2>Small things that make every service smoother</h2>
+            <p>The parts you only notice on a busy Saturday night.</p>
+          </div>
+          <div class="bento reveal">
+            <div class="b-card wide">
+              <h4>⌨️ Keyboard-fast billing</h4>
+              <p>Press <kbd>/</kbd> to search, type a short code like <kbd>PBM</kbd>, hit <kbd>Enter</kbd> — it's in the cart. No mouse needed at the counter.</p>
+            </div>
+            <div class="b-card wide">
+              <h4>🌶️ One-tap cooking notes</h4>
+              <p>Common requests are a tap away and print on the KOT.</p>
+              <div class="chips"><span>Less spicy</span><span>Extra spicy</span><span>No onion</span><span>No garlic</span><span>Jain</span><span>Less oil</span><span>Parcel</span></div>
+            </div>
+            <div class="b-card">
+              <h4>🏷️ Quick discounts</h4>
+              <p>5, 10, 15 or 20 % in one tap, or a flat amount — always recorded in the activity log.</p>
+              <div class="chips"><span>5%</span><span>10%</span><span>15%</span><span>20%</span></div>
+            </div>
+            <div class="b-card">
+              <h4>🔁 Move a running table</h4>
+              <p>Guests changed tables? Move the whole order, KOTs and all.</p>
+            </div>
+            <div class="b-card">
+              <h4>📝 Reasons for every void</h4>
+              <p>Pick from “Customer changed mind”, “Wrong item”, “Quality issue” or type your own.</p>
+            </div>
+            <div class="b-card">
+              <h4>🔔 Kitchen bell</h4>
+              <p>A sound plays when a new KOT arrives. Switch it off for a quiet kitchen.</p>
+            </div>
+            <div class="b-card">
+              <h4>🚫 86 an item from the kitchen</h4>
+              <p>The kitchen marks a dish unavailable and the POS stops selling it immediately.</p>
+            </div>
+            <div class="b-card">
+              <h4>🖨️ Thermal printing</h4>
+              <p>Bills and KOTs print on 58 / 80 mm printers with your logo, GSTIN and FSSAI number.</p>
+            </div>
+            <div class="b-card">
+              <h4>📶 Never loses an order</h4>
+              <p>If the connection drops, a banner warns staff, unsent items stay on screen, and everything catches up when it's back.</p>
+            </div>
+            <div class="b-card">
+              <h4>₹ Indian formats</h4>
+              <p>₹1,00,000 style amounts, Indian dates, and daily reports that follow Indian time.</p>
+            </div>
+            <div class="b-card">
+              <h4>📤 Export to Excel everywhere</h4>
+              <p>Orders, customers, reports, expenses, P&amp;L and the activity log open straight in Excel.</p>
+            </div>
+            <div class="b-card">
+              <h4>🎂 Birthdays this month</h4>
+              <p>See which regulars have birthdays coming up and invite them back.</p>
+            </div>
+            <div class="b-card">
+              <h4>📦 Stock movement history</h4>
+              <p>Every purchase, wastage and recipe consumption per ingredient, with cost and supplier.</p>
+            </div>
+            <div class="b-card">
+              <h4>📅 Daily closing report</h4>
+              <p>Each day's sales, its closing backup, whether it was downloaded, and which staff accounts worked.</p>
+            </div>
+            <div class="b-card">
+              <h4>🩺 One-click health check</h4>
+              <p>Checks your data and backups and tells the owner exactly what needs attention.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= A DAY WITH MYRETAILCARE ================= -->
+      <section class="section alt">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <span class="eyebrow">A day with MyretailCare</span>
+            <h2>From opening the shutter to locking up</h2>
+          </div>
+          <ol class="timeline reveal">
+            <li><time>10:30</time><h4>Opening</h4><p>The manager logs this morning's vegetable purchase and checks low-stock items on the dashboard.</p></li>
+            <li><time>12:45</time><h4>Lunch rush</h4><p>Captains take orders on their phones; KOTs land on the kitchen tablet with a bell.</p></li>
+            <li><time>13:20</time><h4>Kitchen</h4><p>Paneer runs out — the kitchen marks it unavailable and nobody can sell it by mistake.</p></li>
+            <li><time>14:05</time><h4>Billing</h4><p>Table 7 pays part UPI, part cash. The cashier settles in seconds; stock deducts by recipe.</p></li>
+            <li><time>23:30</time><h4>Closing</h4><p>A verified closing backup is saved and copied to the second backup folder (e.g. Google Drive); the owner downloads it with one click.</p></li>
+            <li><time>23:45</time><h4>At home</h4><p>The owner checks today's sales, P&amp;L and the activity log from their phone.</p></li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ================= ALL FEATURES GRID ================= -->
+      <section class="section alt">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <span class="eyebrow">And everything in between</span>
+            <h2>Built for the way Indian restaurants work</h2>
+          </div>
+          <div class="grid reveal">
+            <div class="card"><span class="ic">🧾</span><h4>GST-ready bills</h4><p>GST slab per item, CGST + SGST breakup, service &amp; packaging charges, round-off.</p></div>
+            <div class="card"><span class="ic">🍳</span><h4>KOT workflow</h4><p>Multiple KOTs per table, kitchen status, ready alerts on the floor.</p></div>
+            <div class="card"><span class="ic">📱</span><h4>Any device</h4><p>Counter PC, tablet or phone — it opens in the browser, nothing to install.</p></div>
+            <div class="card"><span class="ic">⚡</span><h4>Live everywhere</h4><p>Orders, tables and kitchen update on every screen in real time.</p></div>
+            <div class="card"><span class="ic">👥</span><h4>Five roles</h4><p>Owner, manager, cashier, captain and kitchen each see only what they need.</p></div>
+            <div class="card"><span class="ic">🔒</span><h4>Secure sign-in</h4><p>Lock-out after wrong passwords, weak-password warnings, re-confirm for risky actions.</p></div>
+            <div class="card"><span class="ic">💾</span><h4>Automatic backups</h4><p>Every 30 minutes, at closing time and before any delete or reset.</p></div>
+            <div class="card"><span class="ic">🏪</span><h4>Multi-restaurant</h4><p>Run all your branches from one place, each with fully separate data.</p></div>
+            <div class="card"><span class="ic">🎓</span><h4>Demo restaurant</h4><p>A full sample restaurant to explore and train staff on — kept apart from your data.</p></div>
+            <div class="card"><span class="ic">✅</span><h4>Getting-started checklist</h4><p>Set up menu, tables, staff and branding step by step.</p></div>
+            <div class="card"><span class="ic">♻️</span><h4>Reset anything</h4><p>Clear sales, menus or everything and start fresh — with a backup first.</p></div>
+            <div class="card"><span class="ic">🌙</span><h4>Light &amp; dark</h4><p>Easy on the eyes in a bright kitchen or a dim bar.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ROLES ================= -->
+      <section class="section">
+        <div class="wrap roles-wrap">
+          <div class="section-head left reveal">
+            <span class="eyebrow">One app, the right screen for everyone</span>
+            <h2>Every person sees their job — nothing more</h2>
+            <p>Each staff member signs in with their own account, so the activity log always knows who did what.</p>
+          </div>
+          <div class="roles reveal">
+            <div class="role"><b>Owner</b><span>Everything, including P&amp;L, backups, staff and settings</span></div>
+            <div class="role"><b>Manager</b><span>Menu, stock, expenses, reports and the floor</span></div>
+            <div class="role"><b>Cashier</b><span>Billing, settling, orders and customers</span></div>
+            <div class="role"><b>Captain</b><span>Tables and taking orders from a phone</span></div>
+            <div class="role"><b>Kitchen</b><span>The kitchen display, full screen</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= DATA SAFETY ================= -->
+      <section class="section dark-band" id="safety">
+        <div class="wrap safety">
+          <div class="reveal">
+            <span class="eyebrow">Data safety</span>
+            <h2>Your order history is never one crash away from gone</h2>
+            <p class="lead">Years of bills, stock and customers live on your own computer — and the app works hard to make sure they stay there.</p>
+            <ul class="safety-list">
+              <li><b>Verified backups</b> every 30 minutes when data changes, each one checked before it's kept.</li>
+              <li><b>Closing-time backup</b> every day, plus a reminder for the owner to download it.</li>
+              <li><b>Second copy</b> to a USB drive or your Google Drive / OneDrive folder.</li>
+              <li><b>Backup before every delete, reset or restore</b> — undo is always one click away.</li>
+              <li><b>Crash-safe records</b> with automatic restart and self-repair from the newest good backup.</li>
+            </ul>
+          </div>
+          <figure class="shot reveal" data-full="/site/img/settings-data.jpg"><img src="/site/img/settings-data.jpg" width="1800" height="1125" alt="Data, reset and backup settings" loading="lazy" /></figure>
+        </div>
+      </section>
+
+      <!-- ================= FEATURE TOUR (slideshow) ================= -->
+      <section class="section" id="screens">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <span class="eyebrow">Product tour</span>
+            <h2>Every feature, one slide at a time</h2>
+            <p>Use the arrows, swipe, or pick a screen below. Click the picture to see it full size.</p>
+          </div>
+          <div class="tour reveal" id="tour" aria-roledescription="carousel" aria-label="MyretailCare feature tour" tabindex="0">
+            <div class="tour-stage">
+            <div class="slide is-active" role="group" aria-roledescription="slide" aria-label="1 of 30: Dashboard">
+              <figure class="slide-img" data-full="/site/img/dashboard.jpg"><img src="/site/img/dashboard.jpg" alt="Dashboard screen" loading="eager" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Overview</span>
+                <h3>Dashboard</h3>
+                <p>Today at a glance: sales, orders, running tables, guests, a 7-day chart, payment and order-type split, top dishes, low stock and today&#x27;s bookings.</p>
+                <ul class="ticks"><li>Today compared with yesterday</li><li>Warnings when backups or passwords need attention</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="2 of 30: Dark mode" hidden>
+              <figure class="slide-img" data-full="/site/img/dashboard-dark.jpg"><img src="/site/img/dashboard-dark.jpg" alt="Dark mode screen" loading="eager" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Overview</span>
+                <h3>Dark mode</h3>
+                <p>Every screen in a dark theme for dim dining rooms, bars and late shifts.</p>
+                <ul class="ticks"><li>Follows the device setting or your choice</li><li>Brand colour carries through</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="3 of 30: Billing / POS" hidden>
+              <figure class="slide-img" data-full="/site/img/pos.jpg"><img src="/site/img/pos.jpg" alt="Billing / POS screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Billing</span>
+                <h3>Billing / POS</h3>
+                <p>Tap dishes, pick Half or Full, add notes and send KOTs — dine-in, takeaway and delivery from one screen.</p>
+                <ul class="ticks"><li>Search by name or short code; veg / non-veg filter</li><li>Live CGST + SGST, round-off and total</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="4 of 30: Split payments" hidden>
+              <figure class="slide-img" data-full="/site/img/pos-settle.jpg"><img src="/site/img/pos-settle.jpg" alt="Split payments screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Billing</span>
+                <h3>Split payments</h3>
+                <p>Settle one bill across cash, UPI and card, with the remaining amount shown as you type.</p>
+                <ul class="ticks"><li>Voided items stay visible with their reason</li><li>No gateway — payments are recorded, never charged</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="5 of 30: Printed bill" hidden>
+              <figure class="slide-img tall" data-full="/site/img/print-bill.jpg"><img src="/site/img/print-bill.jpg" alt="Printed bill screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Printing</span>
+                <h3>Printed bill</h3>
+                <p>A proper GST tax invoice from any 58 / 80 mm thermal printer.</p>
+                <ul class="ticks"><li>Name, address, GSTIN and FSSAI on top</li><li>Items with qty, rate and amount; GST, discount and payment split</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="6 of 30: Printed KOT" hidden>
+              <figure class="slide-img tall" data-full="/site/img/print-kot.jpg"><img src="/site/img/print-kot.jpg" alt="Printed KOT screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Printing</span>
+                <h3>Printed KOT</h3>
+                <p>A clear kitchen ticket with the table, captain, big quantities and cooking notes.</p>
+                <ul class="ticks"><li>Notes like “Less spicy” under each dish</li><li>Order notes like “Birthday” at the bottom</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="7 of 30: Table floor" hidden>
+              <figure class="slide-img" data-full="/site/img/tables.jpg"><img src="/site/img/tables.jpg" alt="Table floor screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Floor</span>
+                <h3>Table floor</h3>
+                <p>Every table by area: free, running or billed, with time seated and running amount.</p>
+                <ul class="ticks"><li>Tap a table to open or continue its order</li><li>Overdue tables are flagged</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="8 of 30: Captain&#x27;s phone — tables" hidden>
+              <figure class="slide-img tall" data-full="/site/img/mobile-tables.jpg"><img src="/site/img/mobile-tables.jpg" alt="Captain&#x27;s phone — tables screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Floor</span>
+                <h3>Captain&#x27;s phone — tables</h3>
+                <p>Captains see the floor on their phones and pick up any table.</p>
+                <ul class="ticks"><li>No app to install — just the browser</li><li>Updates live across devices</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="9 of 30: Captain&#x27;s phone — ordering" hidden>
+              <figure class="slide-img tall" data-full="/site/img/mobile-pos.jpg"><img src="/site/img/mobile-pos.jpg" alt="Captain&#x27;s phone — ordering screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Floor</span>
+                <h3>Captain&#x27;s phone — ordering</h3>
+                <p>Take the order at the table and send it straight to the kitchen.</p>
+                <ul class="ticks"><li>Same menu, variants and notes as the counter</li><li>KOT reaches the kitchen screen instantly</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="10 of 30: Kitchen display" hidden>
+              <figure class="slide-img" data-full="/site/img/kds.jpg"><img src="/site/img/kds.jpg" alt="Kitchen display screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Kitchen</span>
+                <h3>Kitchen display</h3>
+                <p>KOTs appear the moment they&#x27;re sent; cooks move them from new to preparing to ready.</p>
+                <ul class="ticks"><li>Amber and red timers for waiting tickets</li><li>Bell on new KOTs, can be muted</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="11 of 30: Kitchen tablet" hidden>
+              <figure class="slide-img" data-full="/site/img/tablet-kds.jpg"><img src="/site/img/tablet-kds.jpg" alt="Kitchen tablet screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Kitchen</span>
+                <h3>Kitchen tablet</h3>
+                <p>The kitchen display on any tablet or TV browser, signed in with the kitchen role.</p>
+                <ul class="ticks"><li>Mark dishes unavailable from the kitchen</li><li>Reprint any KOT</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="12 of 30: Order history" hidden>
+              <figure class="slide-img" data-full="/site/img/orders.jpg"><img src="/site/img/orders.jpg" alt="Order history screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Orders</span>
+                <h3>Order history</h3>
+                <p>Search any bill by number, customer, phone or table and open its full detail.</p>
+                <ul class="ticks"><li>Reprint bills</li><li>Export the list to Excel</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="13 of 30: Menu" hidden>
+              <figure class="slide-img" data-full="/site/img/menu.jpg"><img src="/site/img/menu.jpg" alt="Menu screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Menu</span>
+                <h3>Menu</h3>
+                <p>Categories and dishes with prices, short codes, GST slab, veg / non-veg and availability.</p>
+                <ul class="ticks"><li>Bulk select and delete</li><li>Switch dishes off when they run out</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="14 of 30: Dish, variants &amp; recipe" hidden>
+              <figure class="slide-img" data-full="/site/img/menu-item.jpg"><img src="/site/img/menu-item.jpg" alt="Dish, variants &amp; recipe screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Menu</span>
+                <h3>Dish, variants &amp; recipe</h3>
+                <p>Half / Full or Regular / Large with their own prices, and a recipe linked to stock.</p>
+                <ul class="ticks"><li>Ingredients deduct automatically on every sale</li><li>Food cost flows into reports and the P&amp;L</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="15 of 30: Inventory" hidden>
+              <figure class="slide-img" data-full="/site/img/inventory.jpg"><img src="/site/img/inventory.jpg" alt="Inventory screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Stock</span>
+                <h3>Inventory</h3>
+                <p>Stock levels with low-stock alerts, purchases with supplier and cost, and wastage.</p>
+                <ul class="ticks"><li>Kg, litre, pieces, dozens, boxes, bottles…</li><li>Full movement history per ingredient</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="16 of 30: Customers &amp; loyalty" hidden>
+              <figure class="slide-img" data-full="/site/img/customers.jpg"><img src="/site/img/customers.jpg" alt="Customers &amp; loyalty screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Customers</span>
+                <h3>Customers &amp; loyalty</h3>
+                <p>Visits, lifetime spend, favourite dishes and loyalty points for every regular.</p>
+                <ul class="ticks"><li>Birthdays this month</li><li>Export to Excel</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="17 of 30: Reservations" hidden>
+              <figure class="slide-img" data-full="/site/img/reservations.jpg"><img src="/site/img/reservations.jpg" alt="Reservations screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Customers</span>
+                <h3>Reservations</h3>
+                <p>Bookings with guests, table and notes, by day or by week.</p>
+                <ul class="ticks"><li>Today&#x27;s bookings on the dashboard</li><li>Booked, seated, cancelled or no-show</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="18 of 30: Expenses" hidden>
+              <figure class="slide-img" data-full="/site/img/expenses.jpg"><img src="/site/img/expenses.jpg" alt="Expenses screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Money</span>
+                <h3>Expenses</h3>
+                <p>Rent, salaries, groceries, gas and more by day, week, month or year.</p>
+                <ul class="ticks"><li>Category totals and comparisons</li><li>Export to Excel</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="19 of 30: Recurring expenses" hidden>
+              <figure class="slide-img" data-full="/site/img/expenses-recurring.jpg"><img src="/site/img/expenses-recurring.jpg" alt="Recurring expenses screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Money</span>
+                <h3>Recurring expenses</h3>
+                <p>Set monthly rent or weekly gas once and it&#x27;s entered automatically.</p>
+                <ul class="ticks"><li>Pause or edit any rule</li><li>Keeps the P&amp;L complete</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="20 of 30: Profit &amp; loss" hidden>
+              <figure class="slide-img" data-full="/site/img/pnl.jpg"><img src="/site/img/pnl.jpg" alt="Profit &amp; loss screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Money</span>
+                <h3>Profit &amp; loss</h3>
+                <p>Sales minus GST, food cost and expenses, month by month, with healthy ranges coloured in.</p>
+                <ul class="ticks"><li>Same period last year side by side</li><li>Yearly view and Excel export</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="21 of 30: Growth forecast" hidden>
+              <figure class="slide-img" data-full="/site/img/insights.jpg"><img src="/site/img/insights.jpg" alt="Growth forecast screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Growth</span>
+                <h3>Growth forecast</h3>
+                <p>A sales projection with a likely range, built from your own history.</p>
+                <ul class="ticks"><li>Best days and hours</li><li>Honest when history is too short</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="22 of 30: Advice" hidden>
+              <figure class="slide-img" data-full="/site/img/insights-advice.jpg"><img src="/site/img/insights-advice.jpg" alt="Advice screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Growth</span>
+                <h3>Advice</h3>
+                <p>Break-even point, weak weekdays, falling dishes and channel mix as short suggestions.</p>
+                <ul class="ticks"><li>Drawn from your numbers</li><li>Updates as you trade</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="23 of 30: Reports" hidden>
+              <figure class="slide-img" data-full="/site/img/reports.jpg"><img src="/site/img/reports.jpg" alt="Reports screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Reports</span>
+                <h3>Reports</h3>
+                <p>Sales by day and hour, categories, payment modes, order types, GST and expenses for any dates.</p>
+                <ul class="ticks"><li>Charts plus tables</li><li>Excel files for your accountant</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="24 of 30: Activity log" hidden>
+              <figure class="slide-img" data-full="/site/img/activity.jpg"><img src="/site/img/activity.jpg" alt="Activity log screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Control</span>
+                <h3>Activity log</h3>
+                <p>Every void, discount, delete, reset and setting change against the account that made it.</p>
+                <ul class="ticks"><li>Filter by person, action or date</li><li>Daily summary of who worked</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="25 of 30: Staff &amp; roles" hidden>
+              <figure class="slide-img" data-full="/site/img/staff.jpg"><img src="/site/img/staff.jpg" alt="Staff &amp; roles screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Control</span>
+                <h3>Staff &amp; roles</h3>
+                <p>Owner, manager, cashier, captain and kitchen — each with their own login and screens.</p>
+                <ul class="ticks"><li>Disable a leaver without losing history</li><li>Wrong-password lock-out</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="26 of 30: Branding" hidden>
+              <figure class="slide-img" data-full="/site/img/settings-branding.jpg"><img src="/site/img/settings-branding.jpg" alt="Branding screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Control</span>
+                <h3>Branding</h3>
+                <p>Your restaurant name, logo, brand colour and theme on every screen and bill.</p>
+                <ul class="ticks"><li>Run several restaurants</li><li>Each with separate data</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="27 of 30: Data, reset &amp; backup" hidden>
+              <figure class="slide-img" data-full="/site/img/settings-data.jpg"><img src="/site/img/settings-data.jpg" alt="Data, reset &amp; backup screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Safety</span>
+                <h3>Data, reset &amp; backup</h3>
+                <p>Verified backups every 30 minutes, at closing time and before any delete or reset.</p>
+                <ul class="ticks"><li>Second copy to USB or Google Drive folder</li><li>Restore any backup, after re-entering your password</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="28 of 30: Set-up checklist" hidden>
+              <figure class="slide-img" data-full="/site/img/setup.jpg"><img src="/site/img/setup.jpg" alt="Set-up checklist screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Getting started</span>
+                <h3>Set-up checklist</h3>
+                <p>Branding, business details, billing &amp; tax, floor, menu, recipes, staff and passwords — step by step.</p>
+                <ul class="ticks"><li>Shows what&#x27;s done and what&#x27;s left</li><li>Links straight to each setting</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="29 of 30: Demo restaurant" hidden>
+              <figure class="slide-img" data-full="/site/img/demo.jpg"><img src="/site/img/demo.jpg" alt="Demo restaurant screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Getting started</span>
+                <h3>Demo restaurant</h3>
+                <p>A full sample restaurant in its own tab for training and reference.</p>
+                <ul class="ticks"><li>Refreshes itself weekly</li><li>Never mixes with your data</li></ul>
+              </div>
+            </div>
+            <div class="slide" role="group" aria-roledescription="slide" aria-label="30 of 30: Sign-in" hidden>
+              <figure class="slide-img" data-full="/site/img/login.jpg"><img src="/site/img/login.jpg" alt="Sign-in screen" loading="lazy" /></figure>
+              <div class="slide-copy">
+                <span class="tag">Getting started</span>
+                <h3>Sign-in</h3>
+                <p>Each person signs in with their own account; several restaurants can run from one installation.</p>
+                <ul class="ticks"><li>Your logo and colours on the sign-in page</li><li>Sessions stay signed in on shop devices</li></ul>
+              </div>
+            </div>
+              <button class="tour-nav tour-prev" type="button" aria-label="Previous feature">‹</button>
+              <button class="tour-nav tour-next" type="button" aria-label="Next feature">›</button>
+            </div>
+            <div class="tour-bar">
+              <span class="tour-count"><b id="tour-n">1</b> / 30</span>
+              <div class="tour-progress"><i id="tour-progress"></i></div>
+              <button class="tour-play" type="button" id="tour-play" data-i18n-skip aria-label="Pause slideshow">❚❚</button>
+            </div>
+            <div class="tour-thumbs" role="tablist" aria-label="Choose a feature">
+            <button type="button" role="tab" aria-selected="true" data-go="0" title="Dashboard"><img src="/site/img/dashboard.jpg" alt="" loading="lazy" /><span>Dashboard</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="1" title="Dark mode"><img src="/site/img/dashboard-dark.jpg" alt="" loading="lazy" /><span>Dark mode</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="2" title="Billing / POS"><img src="/site/img/pos.jpg" alt="" loading="lazy" /><span>Billing / POS</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="3" title="Split payments"><img src="/site/img/pos-settle.jpg" alt="" loading="lazy" /><span>Split payments</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="4" title="Printed bill"><img src="/site/img/print-bill.jpg" alt="" loading="lazy" /><span>Printed bill</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="5" title="Printed KOT"><img src="/site/img/print-kot.jpg" alt="" loading="lazy" /><span>Printed KOT</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="6" title="Table floor"><img src="/site/img/tables.jpg" alt="" loading="lazy" /><span>Table floor</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="7" title="Captain&#x27;s phone — tables"><img src="/site/img/mobile-tables.jpg" alt="" loading="lazy" /><span>Captain&#x27;s phone — tables</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="8" title="Captain&#x27;s phone — ordering"><img src="/site/img/mobile-pos.jpg" alt="" loading="lazy" /><span>Captain&#x27;s phone — ordering</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="9" title="Kitchen display"><img src="/site/img/kds.jpg" alt="" loading="lazy" /><span>Kitchen display</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="10" title="Kitchen tablet"><img src="/site/img/tablet-kds.jpg" alt="" loading="lazy" /><span>Kitchen tablet</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="11" title="Order history"><img src="/site/img/orders.jpg" alt="" loading="lazy" /><span>Order history</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="12" title="Menu"><img src="/site/img/menu.jpg" alt="" loading="lazy" /><span>Menu</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="13" title="Dish, variants &amp; recipe"><img src="/site/img/menu-item.jpg" alt="" loading="lazy" /><span>Dish, variants &amp; recipe</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="14" title="Inventory"><img src="/site/img/inventory.jpg" alt="" loading="lazy" /><span>Inventory</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="15" title="Customers &amp; loyalty"><img src="/site/img/customers.jpg" alt="" loading="lazy" /><span>Customers &amp; loyalty</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="16" title="Reservations"><img src="/site/img/reservations.jpg" alt="" loading="lazy" /><span>Reservations</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="17" title="Expenses"><img src="/site/img/expenses.jpg" alt="" loading="lazy" /><span>Expenses</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="18" title="Recurring expenses"><img src="/site/img/expenses-recurring.jpg" alt="" loading="lazy" /><span>Recurring expenses</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="19" title="Profit &amp; loss"><img src="/site/img/pnl.jpg" alt="" loading="lazy" /><span>Profit &amp; loss</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="20" title="Growth forecast"><img src="/site/img/insights.jpg" alt="" loading="lazy" /><span>Growth forecast</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="21" title="Advice"><img src="/site/img/insights-advice.jpg" alt="" loading="lazy" /><span>Advice</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="22" title="Reports"><img src="/site/img/reports.jpg" alt="" loading="lazy" /><span>Reports</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="23" title="Activity log"><img src="/site/img/activity.jpg" alt="" loading="lazy" /><span>Activity log</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="24" title="Staff &amp; roles"><img src="/site/img/staff.jpg" alt="" loading="lazy" /><span>Staff &amp; roles</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="25" title="Branding"><img src="/site/img/settings-branding.jpg" alt="" loading="lazy" /><span>Branding</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="26" title="Data, reset &amp; backup"><img src="/site/img/settings-data.jpg" alt="" loading="lazy" /><span>Data, reset &amp; backup</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="27" title="Set-up checklist"><img src="/site/img/setup.jpg" alt="" loading="lazy" /><span>Set-up checklist</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="28" title="Demo restaurant"><img src="/site/img/demo.jpg" alt="" loading="lazy" /><span>Demo restaurant</span></button>
+            <button type="button" role="tab" aria-selected="false" data-go="29" title="Sign-in"><img src="/site/img/login.jpg" alt="" loading="lazy" /><span>Sign-in</span></button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= DEPLOY ================= -->
+      <section class="section alt" id="deploy">
+        <div class="wrap">
+          <div class="section-head reveal">
+            <span class="eyebrow">Getting it running</span>
+            <h2>Free to run. Easy to reach.</h2>
+          </div>
+          <div class="plans single reveal">
+            <div class="plan best">
+              <h4>In the restaurant</h4>
+              <div class="price">₹0<small>/month</small></div>
+              <p>Runs on the counter PC, an old laptop or a mini PC. Tablets and phones use the shop Wi-Fi.</p>
+              <ul class="ticks">
+                <li>Keeps billing when the internet is down</li>
+                <li>The owner can check in from home, securely and for free</li>
+                <li>Starts automatically on Windows, Mac and Linux</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= FAQ ================= -->
+      <section class="section" id="faq">
+        <div class="wrap narrow">
+          <div class="section-head reveal"><span class="eyebrow">Questions</span><h2>Frequently asked</h2></div>
+          <div class="faq reveal">
+            <details><summary>Does it take card or UPI payments?</summary><p>It records how each bill was paid — cash, UPI, card, other or a split — but it doesn't connect to a payment gateway, so there are no transaction fees. Use your existing UPI QR or card machine.</p></details>
+            <details><summary>What happens if the internet goes down?</summary><p>If it runs on a computer in the restaurant, nothing changes: billing, the kitchen display and the captains' phones all work over the shop Wi-Fi. Only remote access from outside pauses.</p></details>
+            <details><summary>Do I need to install an app on every device?</summary><p>No. Any modern browser works — Chrome, Edge, Safari or Firefox on a PC, tablet or phone. Open the address once and add it to the home screen if you like.</p></details>
+            <details><summary>Can I try it before entering my own menu?</summary><p>Yes. It starts with a full sample restaurant. When you're ready, use Settings → Data → Start fresh. The demo restaurant stays available under Admin, separate from your data.</p></details>
+            <details><summary>How do I make sure I never lose data?</summary><p>Backups are automatic and verified. Set a second backup folder (a USB drive or your Google Drive folder) and download the closing backup now and then — the dashboard reminds you.</p></details>
+            <details><summary>Can I run more than one restaurant?</summary><p>Yes. One installation can run several restaurants, each with its own menu, staff, data and backups. Staff pick their restaurant on the sign-in screen.</p></details>
+            <details><summary>Does it print bills and KOTs?</summary><p>Yes, through the browser's print dialog, so any printer your computer can use — including 58 mm and 80 mm thermal printers — works.</p></details>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= FINAL CTA ================= -->
+      <section class="final">
+        <div class="wrap final-in reveal">
+          <h2>See it with your own menu in ten minutes.</h2>
+          <p>Open the demo, look around, then press Start fresh and make it yours.</p>
+          <div class="cta-row center">
+            <a class="btn primary lg" href="/app/" data-signin>Sign in to MyretailCare</a>
+            <a class="btn ghost lg on-dark" href="#deploy">How to deploy</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div class="wrap foot-in">
+        <a class="logo" href="#top"><span class="logo-mark">M</span>MyretailCare</a>
+        <span>Restaurant software for small and medium restaurants · Runs on your own computer · No payment gateway</span>
+        <a href="/app/" data-signin>Sign in →</a>
+      </div>
+    </footer>
+
+    <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Screenshot viewer">
+      <button class="lb-close" type="button" aria-label="Close">×</button>
+      <button class="lb-nav lb-prev" type="button" aria-label="Previous screenshot">‹</button>
+      <figure><img alt="" /><figcaption></figcaption></figure>
+      <button class="lb-nav lb-next" type="button" aria-label="Next screenshot">›</button>
+    </div>
   </body>
 </html>

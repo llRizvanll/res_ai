@@ -46,7 +46,7 @@
 .veg-dot.nonveg { border-color: var(--nonveg); } .veg-dot.nonveg::after { background: var(--nonveg); }
 
 .switch { appearance: none; -webkit-appearance: none; width: 36px !important; height: 20px; border-radius: 999px; background: var(--line-strong); position: relative; cursor: pointer; transition: background 0.15s; padding: 0; border: 0; }
-.switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: transform 0.15s; box-shadow: var(--shadow); }
+.switch::after { content: ''; position: absolute; top: 2px; inset-inline-start: 2px; width: 16px; height: 16px; background: #fff; border-radius: 50%; transition: transform 0.15s; box-shadow: var(--shadow); }
 .switch:checked { background: var(--ok); }
 .switch:checked::after { transform: translateX(16px); }
 

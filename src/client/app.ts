@@ -4,6 +4,7 @@ import type { Branding } from './core/theme.js';
 import type { User } from './core/types/people.js';
 import { api, auth, connectEvents, restaurant } from './core/api.js';
 import { setCurrency } from './core/format.js';
+import { initI18n } from './core/i18n.js';
 import { closeDemo, renderDemoRibbon } from './shell/demo-ribbon.js';
 import { installConnectionBanner } from './shell/connection.js';
 import { leaveView, notifyView, startRouter } from './shell/router.js';
@@ -81,4 +82,5 @@ function onLiveEvent(type: string) {
 window.addEventListener('auth:logout', () => showLogin('Your session ended. Please sign in again.'));
 // After a dropped connection, catch up on anything other devices did meanwhile
 installConnectionBanner(() => ['tables', 'orders', 'kot', 'menu'].forEach(notifyView));
-boot();
+// Pick the screen language (and load Arabic if chosen) before drawing anything
+initI18n().finally(boot);

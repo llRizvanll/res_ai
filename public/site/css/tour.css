@@ -1,0 +1,56 @@
+/* Landing page: the feature tour slideshow (one screen per slide, thumbnails underneath) */
+.tour { background: var(--card); border: 1px solid var(--line); border-radius: 24px; box-shadow: var(--shadow-lg); overflow: hidden; outline: none; }
+.tour:focus-visible { box-shadow: 0 0 0 4px var(--brand-ring), var(--shadow-lg); }
+.tour-stage { position: relative; }
+.slide { display: grid; grid-template-columns: 8fr 4fr; align-items: center; min-height: 520px; }
+.slide[hidden] { display: none; }
+.slide.is-active { animation: slide-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.slide.from-left { animation-name: slide-in-left; }
+@keyframes slide-in { from { opacity: 0; transform: translateX(28px); } }
+@keyframes slide-in-left { from { opacity: 0; transform: translateX(-28px); } }
+.slide-img { margin: 0; height: 100%; display: grid; place-items: center; padding: 28px; padding-inline-start: 72px; cursor: zoom-in;
+  background: radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--brand) 18%, var(--bg-alt)), var(--bg-alt) 72%); }
+.slide-img img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top left; border-radius: 12px; border: 1px solid var(--line); box-shadow: var(--shadow); }
+.slide-img.tall img { width: auto; height: 460px; max-width: 100%; aspect-ratio: auto; object-fit: contain; background: #fff; }
+.slide-copy { padding: 36px; padding-inline-end: 64px; }
+.slide-copy h3 { font-size: clamp(24px, 2.6vw, 32px); font-weight: 800; margin: 12px 0 10px; }
+.slide-copy p { color: var(--ink-2); font-size: 16.5px; margin: 0 0 16px; }
+
+.tour-nav { position: absolute; top: 50%; translate: 0 -50%; width: 46px; height: 46px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 28px; line-height: 1; display: grid; place-items: center; cursor: pointer; box-shadow: var(--shadow); z-index: 2; transition: transform 0.15s; }
+.tour-nav:hover { transform: scale(1.08); }
+.tour-prev { inset-inline-start: 14px; }
+.tour-next { inset-inline-end: 14px; }
+
+.tour-bar { display: flex; align-items: center; gap: 16px; padding: 14px 22px; border-top: 1px solid var(--line); }
+.tour-count { font-size: 14px; color: var(--muted); min-width: 56px; font-variant-numeric: tabular-nums; }
+.tour-count b { color: var(--ink); }
+.tour-progress { flex: 1; height: 4px; border-radius: 4px; background: var(--bg-alt); overflow: hidden; }
+.tour-progress i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--brand), var(--brand-2)); }
+.tour-play { width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; font-size: 11px; }
+
+.tour-thumbs { display: flex; gap: 10px; overflow-x: auto; padding: 4px 22px 20px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.tour-thumbs button { flex: 0 0 132px; scroll-snap-align: center; border: 2px solid transparent; border-radius: 12px; background: var(--bg-alt); padding: 5px; cursor: pointer; text-align: start; color: var(--ink-2); font: inherit; transition: border-color 0.15s, opacity 0.15s; opacity: 0.7; }
+.tour-thumbs button:hover { opacity: 1; }
+.tour-thumbs button[aria-selected='true'] { border-color: var(--brand); opacity: 1; color: var(--ink); }
+.tour-thumbs img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border-radius: 7px; }
+.tour-thumbs span { display: block; font-size: 12px; font-weight: 600; padding: 5px 2px 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 960px) {
+  .slide { grid-template-columns: 1fr; min-height: 0; align-items: start; }
+  .slide-img { padding: 18px; }
+  .slide-img.tall img { height: 340px; }
+  .slide-copy { padding: 22px 22px 8px; }
+  .tour-nav { top: calc((100vw - 70px) * 0.3125 + 18px); width: 40px; height: 40px; font-size: 24px; }
+  .tour-prev { inset-inline-start: 8px; }
+  .tour-next { inset-inline-end: 8px; }
+}
+@media (max-width: 520px) {
+  .tour { border-radius: 18px; }
+  .slide-img { padding: 12px; }
+  .slide-img.tall img { height: 260px; }
+  .tour-nav { top: calc((100vw - 58px) * 0.3125 + 12px); width: 36px; height: 36px; }
+  .tour-thumbs button { flex-basis: 108px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slide.is-active { animation: none; }
+}

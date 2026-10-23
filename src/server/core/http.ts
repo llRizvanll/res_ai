@@ -123,23 +123,44 @@ export function send(res: ServerResponse, status: number, data: unknown) {
 const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json',
-  '.webmanifest': 'application/manifest+json',
+  '.webmanifest': 'application/manifest+json', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp',
 };
-/** Serves the browser app; unknown extension-less paths fall back to index.html (client-side routing) */
+/** Photos never change under the same name, so browsers may keep them for a day; everything else is re-checked */
+const LONG_CACHE = new Set(['.jpg', '.jpeg', '.webp']);
+/** The landing page used to live at /home; the app shell lives in public/app/ */
+const MOVED: Record<string, string> = { '/home': '/', '/home/': '/' };
+const APP_SHELL = path.join('app', 'index.html');
+/**
+ * Serves the website. "/" is the landing page; a folder with its own index.html (e.g. /app, the restaurant app)
+ * gets that page; other unknown extension-less paths fall back to the app shell (client-side routing).
+ */
 export function serveStatic(res: ServerResponse, pathname: string) {
   const PUBLIC = config.publicDir;
+  if (MOVED[pathname]) {
+    res.writeHead(301, { Location: MOVED[pathname] }).end();
+    return;
+  }
   let file = path.normalize(path.join(PUBLIC, decodeURIComponent(pathname)));
   if (!file.startsWith(PUBLIC)) {
     res.writeHead(403).end();
     return;
   }
-  if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) {
+  if (fs.existsSync(file) && fs.statSync(file).isDirectory() && fs.existsSync(path.join(file, 'index.html'))) {
+    // Without the trailing slash, relative links inside that page would resolve one level too high
+    if (!pathname.endsWith('/')) {
+      // Built from the resolved folder, never the raw path, so "//host" can't become an off-site redirect
+      res.writeHead(301, { Location: `/${path.relative(PUBLIC, file).split(path.sep).map(encodeURIComponent).join('/')}/` }).end();
+      return;
+    }
+    file = path.join(file, 'index.html');
+  } else if (!fs.existsSync(file) || fs.statSync(file).isDirectory()) {
     if (path.extname(file)) {
       res.writeHead(404).end('Not found');
       return;
     }
-    file = path.join(PUBLIC, 'index.html');
+    file = path.join(PUBLIC, APP_SHELL);
   }
-  res.writeHead(200, { ...SECURITY_HEADERS, 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-cache' });
+  const ext = path.extname(file);
+  res.writeHead(200, { ...SECURITY_HEADERS, 'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': LONG_CACHE.has(ext) ? 'public, max-age=86400' : 'no-cache' });
   fs.createReadStream(file).pipe(res);
 }

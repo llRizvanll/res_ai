@@ -4,7 +4,7 @@
 .cat-panel { position: sticky; top: 0; }
 .cat-list { display: flex; flex-direction: column; gap: 2px; }
 .cat-row { display: flex; align-items: center; gap: 6px; padding: 2px 4px 2px 0; border-radius: 8px; }
-.cat-row button.grow, button.cat-row { border: 0; background: none; text-align: left; padding: 8px 10px; cursor: pointer; font-weight: 600; color: var(--ink-2); border-radius: 8px; }
+.cat-row button.grow, button.cat-row { border: 0; background: none; text-align: start; padding: 8px 10px; cursor: pointer; font-weight: 600; color: var(--ink-2); border-radius: 8px; }
 button.cat-row { display: flex; justify-content: space-between; width: 100%; }
 .cat-row small { color: var(--muted); }
 .cat-row.on { background: var(--brand-50); }

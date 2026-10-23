@@ -9,7 +9,7 @@
 .toolbar label input { width: auto; }
 .toolbar select { width: auto; }
 .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-.actions-cell { text-align: right; white-space: nowrap; }
+.actions-cell { text-align: end; white-space: nowrap; }
 .stats-inline { display: flex; gap: 18px; flex-wrap: wrap; color: var(--ink-2); }
 .stats-inline b { color: var(--ink); }
 

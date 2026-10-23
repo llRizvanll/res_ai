@@ -1,7 +1,7 @@
 /* Tables floor plan. */
 /* ---------------- Floor */
-.toolbar .legend { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
-.legend .lg { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-left: 8px; }
+.toolbar .legend { margin-inline-start: auto; display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
+.legend .lg { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-inline-start: 8px; }
 .legend .lg.free { background: var(--card); border: 1.5px solid var(--line-strong); }
 .legend .lg.busy { background: var(--brand-50); border: 1.5px solid var(--brand); }
 .legend .lg.billed { background: var(--info-50); border: 1.5px solid var(--info); }

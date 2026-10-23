@@ -1,0 +1,15 @@
+/* Arabic (right-to-left). Most layout already follows the reading direction (logical CSS properties);
+   these are the few things that need an explicit mirror. */
+[dir='rtl'] body { font-family: 'Geeza Pro', 'Noto Sans Arabic', 'Segoe UI', Tahoma, var(--font, system-ui), sans-serif; }
+[dir='rtl'] h1, [dir='rtl'] h2, [dir='rtl'] h3, [dir='rtl'] .table th { letter-spacing: 0; }
+/* The toggle knob slides the other way */
+[dir='rtl'] .switch:checked::after { transform: translateX(-16px); }
+/* Phone menu slides in from the right */
+@media (max-width: 960px) {
+  [dir='rtl'] .sidebar { transform: translateX(100%); }
+  [dir='rtl'] .sidebar.open { transform: none; }
+}
+/* Charts read left-to-right like a timeline; numbers and codes keep their own order */
+[dir='rtl'] svg, [dir='rtl'] .chart, [dir='rtl'] input[type='tel'], [dir='rtl'] input[type='number'] { direction: ltr; }
+/* Language buttons in the user menu */
+.dropdown button[data-lang].on, .dropdown button[data-mode].on { color: var(--brand); font-weight: 700; }

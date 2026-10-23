@@ -4,6 +4,6 @@
 .detail-grid > div { display: flex; flex-direction: column; gap: 2px; }
 .detail-grid small { color: var(--muted); font-size: 11.5px; text-transform: uppercase; font-weight: 600; }
 .order-note { background: var(--warn-50); color: var(--warn-ink); padding: 7px 10px; border-radius: 8px; font-size: 13px; margin: 6px 0; }
-.totals-box { margin-left: auto; width: min(320px, 100%); margin-top: 10px; }
+.totals-box { margin-inline-start: auto; width: min(320px, 100%); margin-top: 10px; }
 .totals-box div { display: flex; justify-content: space-between; padding: 3px 0; }
 .totals-box .grand { font-size: 17px; font-weight: 750; border-top: 1px solid var(--line); margin-top: 6px; padding-top: 8px; }

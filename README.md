@@ -1,4 +1,4 @@
-# DineFlow — Restaurant Management Software
+# MyretailCare — Restaurant Management Software
 
 A complete, browser-based restaurant system for small and medium restaurants, written in **TypeScript**.
 One small Node.js server runs on the counter PC; every device on the same Wi-Fi (billing PC, captain phones,
@@ -67,7 +67,7 @@ npm install
 npm start
 ```
 
-Open http://localhost:3000. The server also prints a LAN address (e.g. `http://192.168.1.8:3000`) for tablets/phones.
+Open http://localhost:3000: the front page is the product landing page (feature tour, real screenshots and printed bill/KOT), in English or Arabic — use the language button, or link to `/?lang=ar`. Its **Sign in** button opens the app at http://localhost:3000/app/. The server also prints a LAN address (e.g. `http://192.168.1.8:3000/app/`) for tablets/phones; staff devices can bookmark that directly.
 On first start a database with a sample restaurant and 30 days of demo sales is created in `data/`.
 
 | Role | Username | Password |
@@ -85,7 +85,7 @@ Change these passwords (Staff & Roles) before real use.
 
 ## Quality checks
 
-`npm test` runs 117 checks: 17 unit tests on the bill maths and validators, 85 end-to-end checks on a throwaway server (demo restaurant, sign-in and lock-out, every role's permissions, input validation, bill totals, split payments, stock, retry safety, restaurant isolation, backups, reset & restore, recurring expenses, P&L and forecasts) and 15 architecture checks that keep the code layering intact and every file within its size budget. It never touches your real data.
+`npm test` runs 123 checks: unit tests on the bill maths and validators, end-to-end checks on a throwaway server (landing page, demo restaurant, sign-in and lock-out, every role's permissions, input validation, bill totals, split payments, stock, retry safety, restaurant isolation, backups, reset & restore, recurring expenses, P&L and forecasts) and architecture checks that keep the code layering intact and every file within its size budget. It never touches your real data.
 
 Other scripts:
 

@@ -1,6 +1,6 @@
 # Architecture
 
-DineFlow is one TypeScript codebase with three parts: a **server** (Node, SQLite), a **browser app** (no framework, ES modules) and **shared** domain code used by both. Each part is layered, and every layer may only depend on the layers below it. `src/tests/architecture.test.ts` enforces these rules, so `npm test` fails if an import crosses a boundary.
+MyretailCare is one TypeScript codebase with three parts: a **server** (Node, SQLite), a **browser app** (no framework, ES modules) and **shared** domain code used by both. Each part is layered, and every layer may only depend on the layers below it. `src/tests/architecture.test.ts` enforces these rules, so `npm test` fails if an import crosses a boundary.
 
 ```
 src/
@@ -63,6 +63,9 @@ src/
 ├─ tests/            unit (pure logic), api (end-to-end on a throwaway server), architecture (layer rules + size budgets)
 │
 public/css/          app.css is a manifest; rules live in base/ · components/ · layout/ · pages/ · responsive.css
+public/index.html    the product landing page, served at /  (styles, script, screenshots and translations in public/site/;
+                     Arabic text lives in site/i18n/ar.js keyed by the English text — add a line there when you add English copy)
+public/app/          the restaurant app's page, served at /app/ (sign-in, then every screen; old /#/… links redirect here)
 ```
 
 ## Dependency rules
@@ -147,4 +150,4 @@ in `client/config.ts`; business benchmarks in `shared/benchmarks.ts`.
 ## Quality gates
 
 - `npm run typecheck`: strict TypeScript with no unused code, no implicit returns, no switch fall-through.
-- `npm test`: 117 checks — 17 unit, 85 end-to-end (incl. the demo restaurant) and 15 architecture (layers + size budgets).
+- `npm test`: 123 checks — unit, end-to-end (incl. the demo restaurant and the landing page) and architecture (layers + size budgets).
